@@ -1,0 +1,79 @@
+body {
+    margin: 0;
+    font-family: 'Raleway', sans-serif;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 200px 1fr;
+    height: 100vh;
+}
+
+/* Sidebar styling */
+.sidebar {
+    grid-row: 1 / span 2;
+    grid-column: 1;
+    background-color: #2e8b57; /* Green */
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin: 15px 0;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+/* Header styling */
+.header {
+    grid-row: 1;
+    grid-column: 2;
+    background-color: #4682b4; /* Blue */
+    color: white;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+.header .title {
+    font-size: 24px;
+}
+
+/* Content styling */
+.content {
+    grid-row: 2;
+    grid-column: 2;
+    background-color: #f0f0f0; /* Light grey for contrast */
+    padding: 50px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+input#email {
+    width: 90%;
+    height: 25px;
+}
+
+input#password {
+    width: 90%;
+    height: 25px;
+}
+
+input#submit {
+    background-color: #4682b4;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 25px;
+    color: white;
+    margin-top: 5%;
+    margin-left: 35%;
+}
