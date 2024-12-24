@@ -16,7 +16,7 @@ public class JdbcUserRepository implements UserRepository {
 
   public void save(User user) throws Exception {
     String sql = "INSERT INTO Users (nama_user, email, password) VALUES (?, ?, ?)";
-    jdbcTemplate.update(sql, user.getNama_user(), user.getEmail(), user.getPassword());
+    jdbcTemplate.update(sql, user.getNamaUser(), user.getEmail(), user.getPassword());
   }
 
   public Optional<User> findByEmail(String email) {
@@ -27,6 +27,7 @@ public class JdbcUserRepository implements UserRepository {
 
   private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
     return new User(
+        resultSet.getInt("id_user"),
         resultSet.getString("nama_user"),
         resultSet.getString("email"),
         resultSet.getString("password"),

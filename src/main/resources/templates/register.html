@@ -68,12 +68,9 @@
           type="text"
           name="nama_user"
           class="form-control"
-          th:field="*{nama_user}"
+          th:field="*{namaUser}"
         />
-        <label
-          th:if="${#fields.hasErrors('nama_user')}"
-          th:errors="*{nama_user}"
-        >
+        <label th:if="${#fields.hasErrors('namaUser')}" th:errors="*{namaUser}">
           Nama must contain at least 4 character
         </label>
       </label>
