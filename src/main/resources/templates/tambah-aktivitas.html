@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Tambah Aktivitas</title>
+  </head>
+  <body>
+    <h1>Tambah Aktivitas</h1>
+    <form
+      th:action="@{/aktivitas/tambah}"
+      th:object="${aktivitas}"
+      method="post"
+    >
+      <div>
+        <label for="tanggalAktivitas">Tanggal Aktivitas:</label>
+        <input
+          type="date"
+          id="tanggalAktivitas"
+          th:field="*{tanggalAktivitas}"
+          required
+        />
+      </div>
+      <div>
+        <label for="judul">Judul:</label>
+        <input
+          type="text"
+          id="judul"
+          th:field="*{judul}"
+          maxlength="255"
+          required
+        />
+      </div>
+      <div>
+        <label for="deskripsi">Deskripsi:</label>
+        <textarea
+          id="deskripsi"
+          th:field="*{deskripsi}"
+        ></textarea>
+      </div>
+      <div>
+        <label for="jam">Waktu Tempuh (Jam:Menit:Detik):</label>
+        <input
+          type="number"
+          id="jam"
+          name="jam"
+          min="0"
+          placeholder="Jam"
+          required
+        />
+        <input
+          type="number"
+          id="menit"
+          name="menit"
+          min="0"
+          max="59"
+          placeholder="Menit"
+          required
+        />
+        <input
+          type="number"
+          id="detik"
+          name="detik"
+          min="0"
+          max="59"
+          placeholder="Detik"
+          required
+        />
+      </div>
+      <div>
+        <label for="jarakTempuh">Jarak Tempuh:</label>
+        <input
+          type="number"
+          id="jarakTempuh"
+          th:field="*{jarakTempuh}"
+          step="0.01"
+        />
+      </div>
+      <div>
+        <label for="satuanJarak">Satuan Jarak:</label>
+        <select
+          id="satuanJarak"
+          th:field="*{satuanJarak}"
+          required
+        >
+          <option value="km">Kilometer</option>
+          <option value="m">Meter</option>
+        </select>
+      </div>
+
+      <button type="submit">Tambah</button>
+    </form>
+  </body>
+</html>

@@ -5,7 +5,7 @@ CREATE TABLE Users (
   nama_user VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
-  role_user role_user NOT NULL DEFAULT 'member'
+  role_user VARCHAR(100) NOT NULL DEFAULT 'member'
 );
 
 CREATE TYPE satuan_jarak AS ENUM ('kilometer', 'meter', 'mil', 'yard');
@@ -15,9 +15,9 @@ CREATE TABLE Aktivitas (
     tanggal_aktivitas DATE NOT NULL,
     judul VARCHAR(255) NOT NULL,
     deskripsi TEXT,
-    waktu_tempuh INTERVAL NOT NULL,
+    waktu_tempuh TIME NOT NULL,
     jarak_tempuh NUMERIC(10, 2),
-    satuan_jarak satuan_jarak NOT NULL,
+    satuan_jarak VARCHAR(100) NOT NULL,
     id_user INT NOT NULL,
     FOREIGN KEY (id_user) REFERENCES Users (id_user) ON DELETE CASCADE
 );
