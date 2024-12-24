@@ -4,30 +4,34 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Duration;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Aktivitas {
-    private Integer idAktivitas;
+  private Integer idAktivitas;
 
-    @NotNull
-    private LocalDate tanggalAktivitas;
+  @NotNull
+  private LocalDate tanggalAktivitas;
 
-    @NotNull
-    @Size(max = 255)
-    private String judul;
+  @NotNull
+  @Size(max = 255)
+  private String judul;
 
-    private String deskripsi;
+  private String deskripsi;
 
-    private Duration waktuTempuh;
+  private Duration waktuTempuh;
 
-    private Double jarakTempuh;
+  private Double jarakTempuh;
 
-    @NotNull
-    private String satuanJarak;
+  @NotNull
+  private String satuanJarak;
 
-    private Integer idUser;
+  private Integer idUser;
+
+  private String urlFoto;
 }
