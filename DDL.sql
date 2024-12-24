@@ -1,15 +1,11 @@
-CREATE TABLE Member (
-    id_member SERIAL PRIMARY KEY,
-    nama_member VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
+CREATE TYPE role_user AS ENUM ('admin', 'member');
 
-CREATE TABLE Admin (
-    id_admin SERIAL PRIMARY KEY,
-    nama_admin VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+CREATE TABLE Users (
+  id_user SERIAL PRIMARY KEY,
+  nama_user VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role_user role_user NOT NULL DEFAULT 'member'
 );
 
 CREATE TYPE satuan_jarak AS ENUM ('kilometer', 'meter', 'mil', 'yard');
@@ -22,8 +18,8 @@ CREATE TABLE Aktivitas (
     waktu_tempuh INTERVAL NOT NULL,
     jarak_tempuh NUMERIC(10, 2),
     satuan_jarak satuan_jarak NOT NULL,
-    id_member INT NOT NULL,
-    FOREIGN KEY (id_member) REFERENCES Member (id_member) ON DELETE CASCADE
+    id_user INT NOT NULL,
+    FOREIGN KEY (id_user) REFERENCES Users (id_user) ON DELETE CASCADE
 );
 
 CREATE TABLE Foto_Aktivitas (
@@ -41,9 +37,9 @@ CREATE TABLE Lomba (
 
 CREATE TABLE Lomba_Member (
     id_lomba INT NOT NULL,
-    id_member INT NOT NULL,
+    id_user INT NOT NULL,
     id_aktivitas INT UNIQUE,
-    PRIMARY KEY (id_lomba, id_member),
+    PRIMARY KEY (id_lomba, id_user),
     FOREIGN KEY (id_lomba) REFERENCES Lomba(id_lomba),
-    FOREIGN KEY (id_member) REFERENCES Member(id_member)
+    FOREIGN KEY (id_user) REFERENCES Users(id_user)
 );
