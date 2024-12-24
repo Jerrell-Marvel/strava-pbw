@@ -14,47 +14,50 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LoginController {
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @GetMapping("/login")
-    public String getLogin(HttpSession session) {
-        String username = (String) session.getAttribute("username");
-        if (username == null) {
-            return "login";
-        }
-
-        return "redirect:/dashboard";
+  @GetMapping("/login")
+  public String getLogin(HttpSession session) {
+    String email = (String) session.getAttribute("email");
+    if (email == null) {
+      return "login";
     }
 
-    @GetMapping("/dashboard")
-    public String getDashboard(HttpSession session) {
-        String username = (String) session.getAttribute("username");
-        if (username == null) {
-            return "redirect:/login";
-        }
-        return "dashboard";
+    return "redirect:/dashboard";
+  }
+
+  @GetMapping("/dashboard")
+  public String getDashboard(HttpSession session, Model model) {
+    String email = (String) session.getAttribute("email");
+    if (email == null) {
+      return "redirect:/login";
     }
 
-    @PostMapping("/login")
-    public String postLogin(
-            @RequestParam(name = "username") String username,
-            @RequestParam(name = "password") String password,
-            HttpSession session,
-            Model model) {
-        User user = userService.login(username, password);
-        if (user != null) {
-            session.setAttribute("username", user.getUsername());
-            return "redirect:/dashboard";
-        } else {
-            model.addAttribute("status", "failed");
-            return "login";
-        }
-    }
+    model.addAttribute("email", email);
 
-    @GetMapping("/logout")
-    public String getLogout(HttpSession session) {
-        session.removeAttribute("username");
-        return "redirect:/";
+    return "dashboard";
+  }
+
+  @PostMapping("/login")
+  public String postLogin(
+      @RequestParam(name = "email") String email,
+      @RequestParam(name = "password") String password,
+      HttpSession session,
+      Model model) {
+    User user = userService.login(email, password);
+    if (user != null) {
+      session.setAttribute("email", user.getEmail());
+      return "redirect:/dashboard";
+    } else {
+      model.addAttribute("status", "failed");
+      return "login";
     }
+  }
+
+  @GetMapping("/logout")
+  public String getLogout(HttpSession session) {
+    session.removeAttribute("email");
+    return "redirect:/";
+  }
 }

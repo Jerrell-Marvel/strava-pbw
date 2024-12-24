@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .form-label {
+        width: 150px;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+
+      .form-control {
+        width: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Register</h1>
+    <form method="post" action="register" th:object="${user}">
+      <label>
+        <span class="form-label">Email</span>:
+        <input
+          type="text"
+          name="email"
+          class="form-control"
+          th:field="*{email}"
+        />
+        <label th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+          Email must contain at least 4 character
+        </label>
+      </label>
+      <br />
+
+      <label>
+        <span class="form-label">Password</span>:
+        <input
+          type="password"
+          name="password"
+          class="form-control"
+          th:field="*{password}"
+        />
+        <label th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+          Password must contain at least 4 character
+        </label>
+      </label>
+      <br />
+
+      <label>
+        <span class="form-label">Confirm Password</span>:
+        <input
+          type="password"
+          name="confirmpassword"
+          class="form-control"
+          th:field="*{confirmpassword}"
+        />
+        <label
+          th:if="${#fields.hasErrors('confirmpassword')}"
+          th:errors="*{confirmpassword}"
+        ></label>
+      </label>
+      <br />
+
+      <label>
+        <span class="form-label">Nama</span>:
+        <input
+          type="text"
+          name="nama_user"
+          class="form-control"
+          th:field="*{nama_user}"
+        />
+        <label
+          th:if="${#fields.hasErrors('nama_user')}"
+          th:errors="*{nama_user}"
+        >
+          Nama must contain at least 4 character
+        </label>
+      </label>
+      <br />
+
+      <input type="submit" value="Register" />
+    </form>
+  </body>
+</html>
