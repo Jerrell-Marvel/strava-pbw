@@ -8,9 +8,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class User {
+  private Integer idUser;
+
   @NotNull
   @Size(min = 4, max = 30)
-  private String nama_user;
+  private String namaUser;
 
   @NotNull
   @Size(min = 4, max = 50)
@@ -23,5 +25,5 @@ public class User {
   @NotNull
   private String confirmpassword;
 
-  private String role_user;
+  private String roleUser;
 }

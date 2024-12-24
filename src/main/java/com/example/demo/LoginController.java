@@ -28,6 +28,7 @@ public class LoginController {
   }
 
   @GetMapping("/dashboard")
+  @RequiredRole("*")
   public String getDashboard(HttpSession session, Model model) {
     String email = (String) session.getAttribute("email");
     if (email == null) {
@@ -48,6 +49,8 @@ public class LoginController {
     User user = userService.login(email, password);
     if (user != null) {
       session.setAttribute("email", user.getEmail());
+      session.setAttribute("role", user.getRoleUser());
+      session.setAttribute("idUser", user.getIdUser());
       return "redirect:/dashboard";
     } else {
       model.addAttribute("status", "failed");
@@ -58,6 +61,8 @@ public class LoginController {
   @GetMapping("/logout")
   public String getLogout(HttpSession session) {
     session.removeAttribute("email");
+    session.removeAttribute("role");
+    session.removeAttribute("idUser");
     return "redirect:/";
   }
 }
