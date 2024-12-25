@@ -43,9 +43,9 @@ public class AktivitasController {
   public String tambahAktivitas(
       @Valid Aktivitas aktivitas,
       BindingResult result,
-      @RequestParam int jam,
-      @RequestParam int menit,
-      @RequestParam int detik,
+      @RequestParam(defaultValue = "0") int jam,
+      @RequestParam(defaultValue = "0") int menit,
+      @RequestParam(defaultValue = "0") int detik,
       @RequestParam("foto") MultipartFile foto,
       HttpSession session) {
     if (result.hasErrors()) {

@@ -42,7 +42,7 @@
           name="jam"
           min="0"
           placeholder="Jam"
-          required
+          value="0"
         />
         <input
           type="number"
@@ -51,7 +51,7 @@
           min="0"
           max="59"
           placeholder="Menit"
-          required
+          value="0"
         />
         <input
           type="number"
@@ -60,6 +60,7 @@
           min="0"
           max="59"
           placeholder="Detik"
+          value="0"
           required
         />
       </div>
@@ -70,6 +71,7 @@
           id="jarakTempuh"
           th:field="*{jarakTempuh}"
           step="0.01"
+          required
         />
       </div>
       <div>
