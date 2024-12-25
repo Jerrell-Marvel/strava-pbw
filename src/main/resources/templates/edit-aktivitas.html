@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Edit Aktivitas</title>
+    <script>
+      function previewImage(event) {
+        const output = document.getElementById("newImagePreview");
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.style.display = "inline-block";
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Edit Aktivitas</h1>
+    <form
+      th:action="@{/aktivitas/edit}"
+      th:object="${aktivitas}"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <input type="hidden" th:field="*{idAktivitas}" />
+
+      <label for="judul">Judul</label>
+      <input type="text" id="judul" th:field="*{judul}" />
+
+      <label for="deskripsi">Deskripsi</label>
+      <textarea id="deskripsi" th:field="*{deskripsi}"></textarea>
+
+      <!-- Foto Lama -->
+      <label>Foto Lama:</label>
+      <img
+        th:src="@{'/uploads/aktivitas/' + ${aktivitas.urlFoto}}"
+        alt="Foto Lama"
+        style="max-width: 100px; max-height: 100px"
+      />
+
+      <!-- Upload Foto Baru -->
+      <label for="foto">Foto Baru:</label>
+      <input
+        type="file"
+        id="foto"
+        name="foto"
+        accept="image/*"
+        onchange="previewImage(event)"
+      />
+
+      <!-- Preview Gambar Baru -->
+      <img
+        id="newImagePreview"
+        alt="Preview Gambar Baru"
+        style="max-width: 100px; max-height: 100px; display: none"
+      />
+
+      <button type="submit">Simpan</button>
+    </form>
+  </body>
+</html>

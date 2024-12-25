@@ -6,5 +6,9 @@ import java.util.Optional;
 public interface AktivitasRepository {
   void insertAktivitas(Aktivitas aktivitas);
 
+  void updateAktivitas(Aktivitas aktivitas);
+
   List<Aktivitas> findAktivitasByUserId(Integer idUser);
+
+  Aktivitas getAktivitasById(Integer idAktivitas);
 }

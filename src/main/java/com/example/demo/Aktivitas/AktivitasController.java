@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,5 +94,73 @@ public class AktivitasController {
     });
     model.addAttribute("aktivitasList", aktivitasList);
     return "aktivitas";
+  }
+
+  @GetMapping("/aktivitas/edit/{id}")
+  @RequiredRole("member")
+  public String getEditAktivitas(@PathVariable("id") Integer idAktivitas, Model model) {
+    Aktivitas aktivitas = aktivitasService.getAktivitasById(idAktivitas);
+
+    if (aktivitas == null) {
+      return "redirect:/aktivitas"; // Redirect jika aktivitas tidak ditemukan
+    }
+
+    // Ekstrak nama file dari path
+    if (aktivitas.getUrlFoto() != null) {
+      Path path = Paths.get(aktivitas.getUrlFoto());
+      aktivitas.setUrlFoto(path.getFileName().toString()); // Simpan hanya nama file
+    }
+
+    model.addAttribute("aktivitas", aktivitas);
+    return "edit-aktivitas";
+  }
+
+  @PostMapping("/aktivitas/edit")
+  @RequiredRole("member")
+  public String postEditAktivitas(
+      @Valid Aktivitas aktivitas,
+      BindingResult result,
+      @RequestParam("foto") MultipartFile foto,
+      HttpSession session) {
+
+    if (aktivitas.getTanggalAktivitas() == null || aktivitas.getSatuanJarak() == null) {
+      Aktivitas existingAktivitas = aktivitasService.getAktivitasById(aktivitas.getIdAktivitas());
+      if (aktivitas.getTanggalAktivitas() == null) {
+        aktivitas.setTanggalAktivitas(existingAktivitas.getTanggalAktivitas());
+      }
+      if (aktivitas.getSatuanJarak() == null) {
+        aktivitas.setSatuanJarak(existingAktivitas.getSatuanJarak());
+      }
+    }
+
+    // Jika ada error lain (manual), tambahkan logika error di sini
+    if (aktivitas.getJudul() == null || aktivitas.getJudul().isEmpty()) {
+      result.rejectValue("judul", "error.judul", "Judul tidak boleh kosong");
+      return "edit-aktivitas";
+    }
+
+    try {
+
+      if (!foto.isEmpty()) {
+        // Simpan file foto baru
+        String uploadDir = "src/main/resources/static/uploads/aktivitas/";
+        String fileName = foto.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir + fileName);
+        Files.createDirectories(filePath.getParent());
+        Files.copy(foto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        aktivitas.setUrlFoto(filePath.toString());
+      }
+
+      // Simpan perubahan via service
+      aktivitasService.updateAktivitas(aktivitas);
+      System.out.println("Aktivitas updated successfully!");
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println("Error saving file!");
+      return "edit-aktivitas";
+    }
+
+    System.out.println("Redirecting to /aktivitas");
+    return "redirect:/aktivitas";
   }
 }

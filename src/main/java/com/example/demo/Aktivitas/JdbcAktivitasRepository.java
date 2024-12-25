@@ -52,6 +52,27 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser);
   }
 
+  @Override
+  public Aktivitas getAktivitasById(Integer idAktivitas) {
+    String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
+        "a.jarak_tempuh, a.satuan_jarak, a.id_user, fa.url_foto " +
+        "FROM aktivitas a " +
+        "LEFT JOIN foto_aktivitas fa ON a.id_aktivitas = fa.id_aktivitas " +
+        "WHERE a.id_aktivitas = ?";
+    return jdbcTemplate.queryForObject(sql, this::mapRowToAktivitas, idAktivitas);
+  }
+
+  @Override
+  public void updateAktivitas(Aktivitas aktivitas) {
+    String updateAktivitasSql = "UPDATE aktivitas SET judul = ?, deskripsi = ? WHERE id_aktivitas = ?";
+    jdbcTemplate.update(updateAktivitasSql, aktivitas.getJudul(), aktivitas.getDeskripsi(), aktivitas.getIdAktivitas());
+
+    if (aktivitas.getUrlFoto() != null) {
+      String updateFotoSql = "UPDATE foto_aktivitas SET url_foto = ? WHERE id_aktivitas = ?";
+      jdbcTemplate.update(updateFotoSql, aktivitas.getUrlFoto(), aktivitas.getIdAktivitas());
+    }
+  }
+
   private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
     return new Aktivitas(
         resultSet.getInt("id_aktivitas"),
@@ -73,4 +94,5 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
         .plusMinutes(sqlTime.toLocalTime().getMinute())
         .plusSeconds(sqlTime.toLocalTime().getSecond());
   }
+
 }

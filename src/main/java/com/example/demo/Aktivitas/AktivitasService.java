@@ -18,4 +18,12 @@ public class AktivitasService {
   public List<Aktivitas> getAktivitasByUserId(Integer userId) {
     return aktivitasRepository.findAktivitasByUserId(userId);
   }
+
+  public Aktivitas getAktivitasById(Integer idAktivitas) {
+    return aktivitasRepository.getAktivitasById(idAktivitas);
+  }
+
+  public void updateAktivitas(Aktivitas aktivitas) {
+    aktivitasRepository.updateAktivitas(aktivitas);
+  }
 }

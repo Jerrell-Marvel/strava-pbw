@@ -33,6 +33,13 @@
               <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
               <td th:text="${aktivitas.jarakTempuh}"></td>
               <td th:text="${aktivitas.satuanJarak}"></td>
+              <td>
+                <a
+                  th:href="@{/aktivitas/edit/{id}(id=${aktivitas.idAktivitas})}"
+                  class="btn btn-primary"
+                  >Edit</a
+                >
+              </td>
             </tr>
             <tr th:if="${aktivitasList.isEmpty()}">
               <td colspan="8">Tidak ada aktivitas.</td>
