@@ -19,6 +19,7 @@ CREATE TABLE Aktivitas (
     jarak_tempuh NUMERIC(10, 2),
     satuan_jarak VARCHAR(100) NOT NULL,
     id_user INT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_user) REFERENCES Users (id_user) ON DELETE CASCADE
 );
 
@@ -26,6 +27,7 @@ CREATE TABLE Foto_Aktivitas (
     id_foto SERIAL PRIMARY KEY,
     id_aktivitas INT NOT NULL,
     url_foto VARCHAR(255) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_aktivitas) REFERENCES Aktivitas (id_aktivitas) ON DELETE CASCADE
 );
 

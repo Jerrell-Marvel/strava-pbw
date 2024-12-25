@@ -8,6 +8,8 @@ public interface AktivitasRepository {
 
   void updateAktivitas(Aktivitas aktivitas);
 
+  void deleteAktivitas(Aktivitas aktivitas);
+
   List<Aktivitas> findAktivitasByUserId(Integer idUser);
 
   Aktivitas getAktivitasById(Integer idAktivitas);

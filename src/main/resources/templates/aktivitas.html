@@ -40,6 +40,14 @@
                   >Edit</a
                 >
               </td>
+              <td>
+                <a
+                  th:href="@{/aktivitas/hapus/{id}(id=${aktivitas.idAktivitas})}"
+                  onclick="return confirm('Apakah Anda yakin ingin menghapus aktivitas ini?');"
+                  class="btn btn-danger"
+                  >Hapus</a
+                >
+              </td>
             </tr>
             <tr th:if="${aktivitasList.isEmpty()}">
               <td colspan="8">Tidak ada aktivitas.</td>

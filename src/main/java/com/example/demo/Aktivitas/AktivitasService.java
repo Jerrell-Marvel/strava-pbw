@@ -26,4 +26,8 @@ public class AktivitasService {
   public void updateAktivitas(Aktivitas aktivitas) {
     aktivitasRepository.updateAktivitas(aktivitas);
   }
+
+  public void deleteAktivitas(Aktivitas aktivitas) {
+    aktivitasRepository.deleteAktivitas(aktivitas);
+  }
 }

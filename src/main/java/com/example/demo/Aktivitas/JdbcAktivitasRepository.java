@@ -48,7 +48,7 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
         "a.jarak_tempuh, a.satuan_jarak, a.id_user, fa.url_foto " +
         "FROM aktivitas a " +
         "LEFT JOIN foto_aktivitas fa ON a.id_aktivitas = fa.id_aktivitas " +
-        "WHERE a.id_user = ?";
+        "WHERE a.id_user = ? AND a.is_active = true";
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser);
   }
 
@@ -71,6 +71,17 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
       String updateFotoSql = "UPDATE foto_aktivitas SET url_foto = ? WHERE id_aktivitas = ?";
       jdbcTemplate.update(updateFotoSql, aktivitas.getUrlFoto(), aktivitas.getIdAktivitas());
     }
+  }
+
+  @Override
+  public void deleteAktivitas(Aktivitas aktivitas) {
+    if (aktivitas.getUrlFoto() != null && !aktivitas.getUrlFoto().isEmpty()) {
+      String sqlFoto = "UPDATE foto_aktivitas SET is_active = FALSE WHERE id_aktivitas = ?";
+      jdbcTemplate.update(sqlFoto, aktivitas.getIdAktivitas());
+    }
+
+    String sqlAktivitas = "UPDATE aktivitas SET is_active = FALSE WHERE id_aktivitas = ?";
+    jdbcTemplate.update(sqlAktivitas, aktivitas.getIdAktivitas());
   }
 
   private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
