@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.time.Duration;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,5 +72,26 @@ public class AktivitasController {
     // Save aktivitas via service
     aktivitasService.tambahAktivitas(aktivitas);
     return "redirect:/aktivitas/tambah"; // Adjust redirect as necessary
+  }
+
+  @GetMapping("/aktivitas")
+  @RequiredRole("member")
+  public String getAktivitas(Model model, HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
+    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser);
+    aktivitasList.forEach(aktivitas -> {
+      if (aktivitas.getWaktuTempuh() != null) {
+        long hours = aktivitas.getWaktuTempuh().toHours();
+        long minutes = aktivitas.getWaktuTempuh().toMinutes() % 60;
+        long seconds = aktivitas.getWaktuTempuh().getSeconds() % 60;
+        String formatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        aktivitas.setFormattedWaktuTempuh(formatted);
+        System.out.println("Formatted Waktu Tempuh: " + formatted); // Debug log
+      } else {
+        System.out.println("Waktu Tempuh is null for Aktivitas ID: " + aktivitas.getIdAktivitas());
+      }
+    });
+    model.addAttribute("aktivitasList", aktivitasList);
+    return "aktivitas";
   }
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Aktivitas</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Daftar Aktivitas</h1>
+    </header>
+    <main>
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Tanggal Aktivitas</th>
+              <th>Judul</th>
+              <th>Deskripsi</th>
+              <th>Waktu Tempuh</th>
+              <th>Jarak Tempuh</th>
+              <th>Satuan Jarak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="aktivitas, iterStat : ${aktivitasList}">
+              <td th:text="${iterStat.index + 1}"></td>
+              <td th:text="${aktivitas.tanggalAktivitas}"></td>
+              <td th:text="${aktivitas.judul}"></td>
+              <td th:text="${aktivitas.deskripsi}"></td>
+              <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
+              <td th:text="${aktivitas.jarakTempuh}"></td>
+              <td th:text="${aktivitas.satuanJarak}"></td>
+            </tr>
+            <tr th:if="${aktivitasList.isEmpty()}">
+              <td colspan="8">Tidak ada aktivitas.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <a href="/aktivitas/tambah">Tambah Aktivitas Baru</a>
+    </main>
+  </body>
+</html>

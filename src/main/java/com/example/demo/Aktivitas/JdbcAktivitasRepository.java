@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Time;
+import java.time.Duration;
+import java.util.List;
 
 enum SatuanJarak {
   kilometer, meter, mil, yard;
@@ -36,5 +40,37 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
       String sqlFoto = "INSERT INTO Foto_Aktivitas (id_aktivitas, url_foto) VALUES (?, ?)";
       jdbcTemplate.update(sqlFoto, idAktivitas, aktivitas.getUrlFoto());
     }
+  }
+
+  @Override
+  public List<Aktivitas> findAktivitasByUserId(Integer idUser) {
+    String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
+        "a.jarak_tempuh, a.satuan_jarak, a.id_user, fa.url_foto " +
+        "FROM aktivitas a " +
+        "LEFT JOIN foto_aktivitas fa ON a.id_aktivitas = fa.id_aktivitas " +
+        "WHERE a.id_user = ?";
+    return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser);
+  }
+
+  private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
+    return new Aktivitas(
+        resultSet.getInt("id_aktivitas"),
+        resultSet.getDate("tanggal_aktivitas").toLocalDate(),
+        resultSet.getString("judul"),
+        resultSet.getString("deskripsi"),
+        convertTimeToDuration(resultSet.getTime("waktu_tempuh")),
+        resultSet.getDouble("jarak_tempuh"),
+        resultSet.getString("satuan_jarak"),
+        resultSet.getInt("id_user"),
+        resultSet.getString("url_foto"));
+  }
+
+  private Duration convertTimeToDuration(java.sql.Time sqlTime) {
+    if (sqlTime == null) {
+      return null;
+    }
+    return Duration.ofHours(sqlTime.toLocalTime().getHour())
+        .plusMinutes(sqlTime.toLocalTime().getMinute())
+        .plusSeconds(sqlTime.toLocalTime().getSecond());
   }
 }
