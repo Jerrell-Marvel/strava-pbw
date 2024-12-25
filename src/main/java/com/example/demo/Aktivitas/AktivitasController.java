@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class AktivitasController {
       @RequestParam(defaultValue = "0") int jam,
       @RequestParam(defaultValue = "0") int menit,
       @RequestParam(defaultValue = "0") int detik,
-      @RequestParam("foto") MultipartFile foto,
+      @RequestParam("foto") MultipartFile[] foto,
       HttpSession session) {
     if (result.hasErrors()) {
       return "tambah-aktivitas";
@@ -59,26 +60,59 @@ public class AktivitasController {
 
     aktivitas.setIdUser((Integer) session.getAttribute("idUser"));
 
-    try {
-      if (!foto.isEmpty()) {
-        // Generate unique file name
-        String originalName = foto.getOriginalFilename();
-        String extension = originalName.substring(originalName.lastIndexOf("."));
-        String uniqueFileName = UUID.randomUUID().toString() + extension;
+    // aktivitas.setUrlFoto(new ArrayList<>());
 
-        // Save the file
-        String uploadDir = "src/main/resources/static/uploads/aktivitas/";
-        Path filePath = Paths.get(uploadDir + uniqueFileName);
-        Files.createDirectories(filePath.getParent());
-        Files.copy(foto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+    for (MultipartFile file : foto) {
+      if (!file.isEmpty()) {
+        // Handle file processing (e.g., save to disk, database, etc.)
+        try {
+          if (!file.isEmpty()) {
+            // Generate unique file name
+            String originalName = file.getOriginalFilename();
+            String extension = originalName.substring(originalName.lastIndexOf("."));
+            String uniqueFileName = UUID.randomUUID().toString() + extension;
 
-        // Set the unique file name in aktivitas
-        aktivitas.setUrlFoto(uniqueFileName);
+            // Save the file
+            String uploadDir = "src/main/resources/static/uploads/aktivitas/";
+            Path filePath = Paths.get(uploadDir + uniqueFileName);
+            Files.createDirectories(filePath.getParent());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Set the unique file name in aktivitas
+            aktivitas.getUrlFoto().add(uniqueFileName);
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+          return "tambah-aktivitas"; // Kembali ke form jika ada error
+        }
+
       }
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "tambah-aktivitas"; // Kembali ke form jika ada error
+
     }
+
+    // try
+
+    // {
+    // if (!foto.isEmpty()) {
+    // // Generate unique file name
+    // String originalName = foto.getOriginalFilename();
+    // String extension = originalName.substring(originalName.lastIndexOf("."));
+    // String uniqueFileName = UUID.randomUUID().toString() + extension;
+
+    // // Save the file
+    // String uploadDir = "src/main/resources/static/uploads/aktivitas/";
+    // Path filePath = Paths.get(uploadDir + uniqueFileName);
+    // Files.createDirectories(filePath.getParent());
+    // Files.copy(foto.getInputStream(), filePath,
+    // StandardCopyOption.REPLACE_EXISTING);
+
+    // // Set the unique file name in aktivitas
+    // aktivitas.setUrlFoto(uniqueFileName);
+    // }
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // return "tambah-aktivitas"; // Kembali ke form jika ada error
+    // }
 
     // Save aktivitas via service
     aktivitasService.tambahAktivitas(aktivitas);
@@ -108,17 +142,27 @@ public class AktivitasController {
 
   @GetMapping("/aktivitas/edit/{id}")
   @RequiredRole("member")
-  public String getEditAktivitas(@PathVariable("id") Integer idAktivitas, Model model) {
-    Aktivitas aktivitas = aktivitasService.getAktivitasById(idAktivitas);
+  public String getEditAktivitas(@PathVariable("id") Integer idAktivitas, Model model, HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
+    Aktivitas aktivitas = aktivitasService.getAktivitasById(idAktivitas, idUser);
 
     if (aktivitas == null) {
       return "redirect:/aktivitas"; // Redirect jika aktivitas tidak ditemukan
     }
 
     // Ekstrak nama file dari path
-    if (aktivitas.getUrlFoto() != null) {
-      Path path = Paths.get(aktivitas.getUrlFoto());
-      aktivitas.setUrlFoto(path.getFileName().toString()); // Simpan hanya nama file
+    // if (aktivitas.getUrlFoto() != null) {
+    // Path path = Paths.get(aktivitas.getUrlFoto());
+    // aktivitas.setUrlFoto(path.getFileName().toString());
+    // }
+
+    if (aktivitas.getWaktuTempuh() != null) {
+      long hours = aktivitas.getWaktuTempuh().toHours();
+      long minutes = aktivitas.getWaktuTempuh().toMinutes() % 60;
+      long seconds = aktivitas.getWaktuTempuh().getSeconds() % 60;
+      String formatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+      aktivitas.setFormattedWaktuTempuh(formatted);
+      System.out.println("Formatted Waktu Tempuh: " + formatted); // Debug log
     }
 
     model.addAttribute("aktivitas", aktivitas);
@@ -130,18 +174,19 @@ public class AktivitasController {
   public String postEditAktivitas(
       @Valid Aktivitas aktivitas,
       BindingResult result,
-      @RequestParam("foto") MultipartFile foto,
       HttpSession session) {
 
-    if (aktivitas.getTanggalAktivitas() == null || aktivitas.getSatuanJarak() == null) {
-      Aktivitas existingAktivitas = aktivitasService.getAktivitasById(aktivitas.getIdAktivitas());
-      if (aktivitas.getTanggalAktivitas() == null) {
-        aktivitas.setTanggalAktivitas(existingAktivitas.getTanggalAktivitas());
-      }
-      if (aktivitas.getSatuanJarak() == null) {
-        aktivitas.setSatuanJarak(existingAktivitas.getSatuanJarak());
-      }
-    }
+    // if (aktivitas.getTanggalAktivitas() == null || aktivitas.getSatuanJarak() ==
+    // null) {
+    // Aktivitas existingAktivitas =
+    // aktivitasService.getAktivitasById(aktivitas.getIdAktivitas());
+    // if (aktivitas.getTanggalAktivitas() == null) {
+    // aktivitas.setTanggalAktivitas(existingAktivitas.getTanggalAktivitas());
+    // }
+    // if (aktivitas.getSatuanJarak() == null) {
+    // aktivitas.setSatuanJarak(existingAktivitas.getSatuanJarak());
+    // }
+    // }
 
     // Jika ada error lain (manual), tambahkan logika error di sini
     if (aktivitas.getJudul() == null || aktivitas.getJudul().isEmpty()) {
@@ -149,26 +194,31 @@ public class AktivitasController {
       return "edit-aktivitas";
     }
 
-    try {
+    // try {
 
-      if (!foto.isEmpty()) {
-        // Simpan file foto baru
-        String uploadDir = "src/main/resources/static/uploads/aktivitas/";
-        String fileName = foto.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir + fileName);
-        Files.createDirectories(filePath.getParent());
-        Files.copy(foto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        aktivitas.setUrlFoto(filePath.toString());
-      }
+    // if (!foto.isEmpty()) {
+    // // Simpan file foto baru
+    // String uploadDir = "src/main/resources/static/uploads/aktivitas/";
+    // String fileName = foto.getOriginalFilename();
+    // Path filePath = Paths.get(uploadDir + fileName);
+    // Files.createDirectories(filePath.getParent());
+    // Files.copy(foto.getInputStream(), filePath,
+    // StandardCopyOption.REPLACE_EXISTING);
+    // // aktivitas.setUrlFoto(filePath.toString());
+    // }
 
-      // Simpan perubahan via service
-      aktivitasService.updateAktivitas(aktivitas);
-      System.out.println("Aktivitas updated successfully!");
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println("Error saving file!");
-      return "edit-aktivitas";
-    }
+    // // Simpan perubahan via service
+    // aktivitasService.updateAktivitas(aktivitas);
+    // System.out.println("Aktivitas updated successfully!");
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // System.out.println("Error saving file!");
+    // return "edit-aktivitas";
+    // }
+
+    Integer idUser = (Integer) session.getAttribute("idUser");
+
+    aktivitasService.updateAktivitas(aktivitas, idUser);
 
     System.out.println("Redirecting to /aktivitas");
     return "redirect:/aktivitas";
@@ -176,15 +226,15 @@ public class AktivitasController {
 
   @GetMapping("/aktivitas/hapus/{id}")
   @RequiredRole("member")
-  public String hapusAktivitas(@PathVariable("id") Integer idAktivitas) {
-    // Ambil data aktivitas berdasarkan ID
-    Aktivitas aktivitas = aktivitasService.getAktivitasById(idAktivitas);
-    if (aktivitas == null) {
-      return "redirect:/aktivitas"; // Redirect jika aktivitas tidak ditemukan
-    }
-
+  public String hapusAktivitas(@PathVariable("id") Integer idAktivitas, HttpSession session) {
+    // // Ambil data aktivitas berdasarkan ID
+    // Aktivitas aktivitas = aktivitasService.getAktivitasById(idAktivitas);
+    // if (aktivitas == null) {
+    // return "redirect:/aktivitas"; // Redirect jika aktivitas tidak ditemukan
+    // }
+    Integer idUser = (Integer) session.getAttribute("idUser");
     // Hapus aktivitas
-    aktivitasService.deleteAktivitas(aktivitas);
+    aktivitasService.deleteAktivitas(idAktivitas, idUser);
     return "redirect:/aktivitas"; // Kembali ke halaman daftar aktivitas
   }
 }

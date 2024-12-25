@@ -18,21 +18,49 @@
       method="post"
       enctype="multipart/form-data"
     >
-      <input type="hidden" th:field="*{idAktivitas}" />
+      <input
+        type="hidden"
+        th:field="*{idAktivitas}"
+      />
+
+      <input
+        type="hidden"
+        th:field="*{satuanJarak}"
+      />
+
+      <label for="tanggal">Tanggal</label>
+      <p
+        id="tanggal"
+        th:text="*{tanggalAktivitas}"
+      ></p>
+
+      <label for="waktu">Waktu</label>
+      <p
+        id="waktu"
+        th:text="*{formattedWaktuTempuh}"
+      ></p>
 
       <label for="judul">Judul</label>
-      <input type="text" id="judul" th:field="*{judul}" />
+      <input
+        type="text"
+        id="judul"
+        th:field="*{judul}"
+      />
 
       <label for="deskripsi">Deskripsi</label>
-      <textarea id="deskripsi" th:field="*{deskripsi}"></textarea>
+      <textarea
+        id="deskripsi"
+        th:field="*{deskripsi}"
+      ></textarea>
 
       <!-- Foto Lama -->
       <label>Foto Lama:</label>
-      <img
-        th:src="@{'/uploads/aktivitas/' + ${aktivitas.urlFoto}}"
-        alt="Foto Lama"
-        style="max-width: 100px; max-height: 100px"
-      />
+      <div th:each="foto : ${aktivitas.urlFoto}">
+        <img
+          th:src="@{'/uploads/aktivitas/' + ${foto}}"
+          style="max-width: 100px; max-height: 100px"
+        />
+      </div>
 
       <!-- Upload Foto Baru -->
       <label for="foto">Foto Baru:</label>
