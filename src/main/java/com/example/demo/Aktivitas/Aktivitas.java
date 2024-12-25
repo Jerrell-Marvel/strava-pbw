@@ -34,4 +34,27 @@ public class Aktivitas {
   private Integer idUser;
 
   private String urlFoto;
+
+  private String formattedWaktuTempuh;
+
+  public Aktivitas(Integer idAktivitas,
+      @NotNull LocalDate tanggalAktivitas,
+      @NotNull @Size(max = 255) String judul,
+      String deskripsi,
+      Duration waktuTempuh,
+      Double jarakTempuh,
+      @NotNull String satuanJarak,
+      Integer idUser,
+      String urlFoto) {
+    this.idAktivitas = idAktivitas;
+    this.tanggalAktivitas = tanggalAktivitas;
+    this.judul = judul;
+    this.deskripsi = deskripsi;
+    this.waktuTempuh = waktuTempuh;
+    this.jarakTempuh = jarakTempuh;
+    this.satuanJarak = satuanJarak;
+    this.idUser = idUser;
+    this.urlFoto = urlFoto;
+  }
+
 }
