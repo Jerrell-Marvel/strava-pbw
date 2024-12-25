@@ -1,6 +1,7 @@
 package com.example.demo.Aktivitas;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -36,52 +37,60 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
         aktivitas.getSatuanJarak(),
         aktivitas.getIdUser());
 
-    if (aktivitas.getUrlFoto() != null) {
+    if (aktivitas.getUrlFoto() != null && !aktivitas.getUrlFoto().isEmpty()) {
       String sqlFoto = "INSERT INTO Foto_Aktivitas (id_aktivitas, url_foto) VALUES (?, ?)";
-      jdbcTemplate.update(sqlFoto, idAktivitas, aktivitas.getUrlFoto());
+      for (String urlFoto : aktivitas.getUrlFoto()) {
+        jdbcTemplate.update(sqlFoto, idAktivitas, urlFoto);
+      }
     }
   }
 
   @Override
   public List<Aktivitas> findAktivitasByUserId(Integer idUser) {
     String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
-        "a.jarak_tempuh, a.satuan_jarak, a.id_user, fa.url_foto " +
-        "FROM aktivitas a " +
-        "LEFT JOIN foto_aktivitas fa ON a.id_aktivitas = fa.id_aktivitas " +
-        "WHERE a.id_user = ? AND a.is_active = true";
+        "a.jarak_tempuh, a.satuan_jarak, a.id_user " +
+        "FROM aktivitas a " + "WHERE a.id_user = ? AND a.is_active = true";
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser);
   }
 
   @Override
-  public Aktivitas getAktivitasById(Integer idAktivitas) {
-    String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
-        "a.jarak_tempuh, a.satuan_jarak, a.id_user, fa.url_foto " +
-        "FROM aktivitas a " +
-        "LEFT JOIN foto_aktivitas fa ON a.id_aktivitas = fa.id_aktivitas " +
-        "WHERE a.id_aktivitas = ?";
-    return jdbcTemplate.queryForObject(sql, this::mapRowToAktivitas, idAktivitas);
-  }
+  public Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser) {
+    try {
+      String sqlAktivitas = "SELECT * FROM aktivitas WHERE id_aktivitas = ? AND id_user = ?";
+      Aktivitas aktivitas = jdbcTemplate.queryForObject(sqlAktivitas, this::mapRowToAktivitas, idAktivitas, idUser);
 
-  @Override
-  public void updateAktivitas(Aktivitas aktivitas) {
-    String updateAktivitasSql = "UPDATE aktivitas SET judul = ?, deskripsi = ? WHERE id_aktivitas = ?";
-    jdbcTemplate.update(updateAktivitasSql, aktivitas.getJudul(), aktivitas.getDeskripsi(), aktivitas.getIdAktivitas());
+      String sqlFoto = "SELECT url_foto FROM foto_aktivitas WHERE id_aktivitas = ? AND is_active = TRUE";
+      List<String> fotoList = jdbcTemplate.queryForList(sqlFoto, String.class, idAktivitas);
+      aktivitas.setUrlFoto(fotoList);
 
-    if (aktivitas.getUrlFoto() != null) {
-      String updateFotoSql = "UPDATE foto_aktivitas SET url_foto = ? WHERE id_aktivitas = ?";
-      jdbcTemplate.update(updateFotoSql, aktivitas.getUrlFoto(), aktivitas.getIdAktivitas());
+      return aktivitas;
+    } catch (EmptyResultDataAccessException e) {
+      throw new IllegalStateException(
+          "No aktivitas found for id_aktivitas: " + idAktivitas + " and id_user: " + idUser);
     }
   }
 
   @Override
-  public void deleteAktivitas(Aktivitas aktivitas) {
-    if (aktivitas.getUrlFoto() != null && !aktivitas.getUrlFoto().isEmpty()) {
-      String sqlFoto = "UPDATE foto_aktivitas SET is_active = FALSE WHERE id_aktivitas = ?";
-      jdbcTemplate.update(sqlFoto, aktivitas.getIdAktivitas());
+  public void updateAktivitas(Aktivitas aktivitas, Integer idUser) {
+    String updateAktivitasSql = "UPDATE aktivitas SET judul = ?, deskripsi = ? WHERE id_aktivitas = ? AND id_user = ?";
+    int rowsAffected = jdbcTemplate.update(updateAktivitasSql, aktivitas.getJudul(), aktivitas.getDeskripsi(),
+        aktivitas.getIdAktivitas(), idUser);
+
+    if (rowsAffected == 0) {
+      throw new IllegalStateException("No rows updated. Either the aktivitas or user does not exist.");
     }
 
-    String sqlAktivitas = "UPDATE aktivitas SET is_active = FALSE WHERE id_aktivitas = ?";
-    jdbcTemplate.update(sqlAktivitas, aktivitas.getIdAktivitas());
+  }
+
+  @Override
+  public void deleteAktivitas(Integer idAktivitas, Integer idUser) {
+    String sqlAktivitas = "UPDATE aktivitas SET is_active = FALSE WHERE id_aktivitas = ? AND id_user = ?";
+    int rowsAffected = jdbcTemplate.update(sqlAktivitas, idAktivitas, idUser);
+
+    if (rowsAffected == 0) {
+      throw new IllegalStateException(
+          "No aktivitas found to delete for id_aktivitas: " + idAktivitas + " and id_user: " + idUser);
+    }
   }
 
   private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
@@ -93,8 +102,7 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
         convertTimeToDuration(resultSet.getTime("waktu_tempuh")),
         resultSet.getDouble("jarak_tempuh"),
         resultSet.getString("satuan_jarak"),
-        resultSet.getInt("id_user"),
-        resultSet.getString("url_foto"));
+        resultSet.getInt("id_user"));
   }
 
   private Duration convertTimeToDuration(java.sql.Time sqlTime) {

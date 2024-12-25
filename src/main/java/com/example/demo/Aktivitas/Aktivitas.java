@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.Duration;
 
 @Data
@@ -33,7 +35,7 @@ public class Aktivitas {
 
   private Integer idUser;
 
-  private String urlFoto;
+  private List<String> urlFoto = new ArrayList<>();
 
   private String formattedWaktuTempuh;
 
@@ -44,8 +46,7 @@ public class Aktivitas {
       Duration waktuTempuh,
       Double jarakTempuh,
       @NotNull String satuanJarak,
-      Integer idUser,
-      String urlFoto) {
+      Integer idUser) {
     this.idAktivitas = idAktivitas;
     this.tanggalAktivitas = tanggalAktivitas;
     this.judul = judul;
@@ -54,7 +55,6 @@ public class Aktivitas {
     this.jarakTempuh = jarakTempuh;
     this.satuanJarak = satuanJarak;
     this.idUser = idUser;
-    this.urlFoto = urlFoto;
   }
 
 }

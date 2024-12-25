@@ -32,7 +32,10 @@
       </div>
       <div>
         <label for="deskripsi">Deskripsi:</label>
-        <textarea id="deskripsi" th:field="*{deskripsi}"></textarea>
+        <textarea
+          id="deskripsi"
+          th:field="*{deskripsi}"
+        ></textarea>
       </div>
       <div>
         <label for="jam">Waktu Tempuh (Jam:Menit:Detik):</label>
@@ -76,7 +79,11 @@
       </div>
       <div>
         <label for="satuanJarak">Satuan Jarak:</label>
-        <select id="satuanJarak" th:field="*{satuanJarak}" required>
+        <select
+          id="satuanJarak"
+          th:field="*{satuanJarak}"
+          required
+        >
           <option value="km">Kilometer</option>
           <option value="m">Meter</option>
         </select>
@@ -84,7 +91,13 @@
 
       <div>
         <label for="foto">Unggah Foto:</label>
-        <input type="file" id="foto" name="foto" accept="image/*" />
+        <input
+          type="file"
+          id="foto"
+          name="foto"
+          accept="image/*"
+          multiple
+        />
       </div>
 
       <button type="submit">Tambah</button>

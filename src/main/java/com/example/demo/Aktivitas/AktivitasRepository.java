@@ -6,11 +6,11 @@ import java.util.Optional;
 public interface AktivitasRepository {
   void insertAktivitas(Aktivitas aktivitas);
 
-  void updateAktivitas(Aktivitas aktivitas);
+  void updateAktivitas(Aktivitas aktivitas, Integer idUser);
 
-  void deleteAktivitas(Aktivitas aktivitas);
+  void deleteAktivitas(Integer idAktivitas, Integer idUser);
 
   List<Aktivitas> findAktivitasByUserId(Integer idUser);
 
-  Aktivitas getAktivitasById(Integer idAktivitas);
+  Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser);
 }
