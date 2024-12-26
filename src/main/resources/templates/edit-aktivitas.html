@@ -2,13 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Edit Aktivitas</title>
-    <script>
+    <!-- <script>
       function previewImage(event) {
         const output = document.getElementById("newImagePreview");
         output.src = URL.createObjectURL(event.target.files[0]);
         output.style.display = "inline-block";
       }
-    </script>
+    </script> -->
   </head>
   <body>
     <h1>Edit Aktivitas</h1>
@@ -18,68 +18,119 @@
       method="post"
       enctype="multipart/form-data"
     >
-      <input
-        type="hidden"
-        th:field="*{idAktivitas}"
-      />
+      <input type="hidden" th:field="*{idAktivitas}" />
 
-      <input
-        type="hidden"
-        th:field="*{satuanJarak}"
-      />
+      <input type="hidden" th:field="*{satuanJarak}" />
 
       <label for="tanggal">Tanggal</label>
-      <p
-        id="tanggal"
-        th:text="*{tanggalAktivitas}"
-      ></p>
+      <p id="tanggal" th:text="*{tanggalAktivitas}"></p>
 
       <label for="waktu">Waktu</label>
-      <p
-        id="waktu"
-        th:text="*{formattedWaktuTempuh}"
-      ></p>
+      <p id="waktu" th:text="*{formattedWaktuTempuh}"></p>
 
       <label for="judul">Judul</label>
-      <input
-        type="text"
-        id="judul"
-        th:field="*{judul}"
-      />
+      <input type="text" id="judul" th:field="*{judul}" />
 
       <label for="deskripsi">Deskripsi</label>
-      <textarea
-        id="deskripsi"
-        th:field="*{deskripsi}"
-      ></textarea>
+      <textarea id="deskripsi" th:field="*{deskripsi}"></textarea>
+
+      <input type="hidden" th:field="*{idAktivitas}" />
 
       <!-- Foto Lama -->
       <label>Foto Lama:</label>
       <div th:each="foto : ${aktivitas.urlFoto}">
-        <img
-          th:src="@{'/uploads/aktivitas/' + ${foto}}"
-          style="max-width: 100px; max-height: 100px"
-        />
+        <div style="display: flex; align-items: center; margin-bottom: 10px">
+          <img
+            th:src="@{'/uploads/aktivitas/' + ${foto}}"
+            style="max-width: 100px; max-height: 100px; margin-right: 10px"
+          />
+          <button
+            type="button"
+            th:attr="onclick=|deletePhoto('${foto}')|"
+            style="
+              background-color: red;
+              color: white;
+              border: none;
+              cursor: pointer;
+              padding: 5px 10px;
+            "
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
-      <!-- Upload Foto Baru -->
-      <label for="foto">Foto Baru:</label>
-      <input
-        type="file"
-        id="foto"
-        name="foto"
-        accept="image/*"
-        onchange="previewImage(event)"
-      />
-
-      <!-- Preview Gambar Baru -->
-      <img
-        id="newImagePreview"
-        alt="Preview Gambar Baru"
-        style="max-width: 100px; max-height: 100px; display: none"
-      />
+      <!-- Tambahkan Foto Baru -->
+      <label for="foto">Tambah Foto Baru:</label>
+      <input type="file" id="foto" name="foto" accept="image/*" multiple />
+      <button
+        type="button"
+        onclick="uploadNewPhotos()"
+        style="
+          background-color: green;
+          color: white;
+          border: none;
+          cursor: pointer;
+          padding: 5px 10px;
+        "
+      >
+        Simpan Foto
+      </button>
 
       <button type="submit">Simpan</button>
     </form>
+
+    <script>
+      function deletePhoto(photoUrl) {
+        console.log(photoUrl);
+        if (confirm("Apakah Anda yakin ingin menghapus foto ini?")) {
+          fetch(`/aktivitas/hapus-foto`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ urlFoto: photoUrl }),
+          })
+            .then((response) => {
+              if (response.ok) {
+                location.reload(); // Refresh halaman setelah foto dihapus
+              } else {
+                alert("Gagal menghapus foto!");
+              }
+            })
+            .catch(() => alert("Terjadi kesalahan saat menghapus foto!"));
+        }
+      }
+
+      function uploadNewPhotos() {
+        const formData = new FormData();
+        const files = document.getElementById("foto").files;
+
+        // Tambahkan file ke FormData
+        for (let file of files) {
+          formData.append("foto", file);
+        }
+
+        // Tambahkan idAktivitas ke FormData
+        const idAktivitas = document.querySelector(
+          "input[name='idAktivitas']"
+        ).value;
+        formData.append("idAktivitas", idAktivitas);
+
+        // Kirim data ke backend
+        fetch(`/aktivitas/upload-foto`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              location.reload(); // Refresh halaman setelah foto ditambahkan
+            } else {
+              alert("Gagal mengunggah foto!");
+            }
+          })
+          .catch(() => alert("Terjadi kesalahan saat mengunggah foto!"));
+      }
+    </script>
   </body>
 </html>

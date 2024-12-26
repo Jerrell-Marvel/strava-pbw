@@ -13,4 +13,8 @@ public interface AktivitasRepository {
   List<Aktivitas> findAktivitasByUserId(Integer idUser);
 
   Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser);
+
+  void deleteFotoByUrl(String urlFoto);
+
+  void insertFoto(Integer idAktivitas, String urlFoto);
 }

@@ -9,12 +9,16 @@ import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -236,5 +240,39 @@ public class AktivitasController {
     // Hapus aktivitas
     aktivitasService.deleteAktivitas(idAktivitas, idUser);
     return "redirect:/aktivitas"; // Kembali ke halaman daftar aktivitas
+  }
+
+  @PostMapping("/aktivitas/hapus-foto")
+  @RequiredRole("member")
+  public ResponseEntity<?> hapusFoto(@RequestBody Map<String, String> body) {
+    String urlFoto = body.get("urlFoto");
+    if (urlFoto == null || urlFoto.isEmpty()) {
+      return ResponseEntity.badRequest().body("URL Foto tidak valid!");
+    }
+
+    try {
+      aktivitasService.deleteFotoByUrl(urlFoto);
+      return ResponseEntity.ok("Foto berhasil dihapus");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Gagal menghapus foto");
+    }
+  }
+
+  @PostMapping("/aktivitas/upload-foto")
+  @RequiredRole("member")
+  public ResponseEntity<?> uploadFoto(
+      @RequestParam("foto") MultipartFile[] foto,
+      @RequestParam("idAktivitas") Integer idAktivitas) {
+    if (idAktivitas == null) {
+      return ResponseEntity.badRequest().body("ID Aktivitas tidak valid!");
+    }
+
+    try {
+      List<String> urls = aktivitasService.uploadFoto(foto, idAktivitas);
+      return ResponseEntity.ok(urls);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Gagal mengunggah foto");
+    }
   }
 }
