@@ -34,29 +34,32 @@
       <label for="deskripsi">Deskripsi</label>
       <textarea id="deskripsi" th:field="*{deskripsi}"></textarea>
 
-      <input type="hidden" th:field="*{idAktivitas}" />
-
       <!-- Foto Lama -->
       <label>Foto Lama:</label>
-      <div th:each="foto : ${aktivitas.urlFoto}">
-        <div style="display: flex; align-items: center; margin-bottom: 10px">
-          <img
-            th:src="@{'/uploads/aktivitas/' + ${foto}}"
-            style="max-width: 100px; max-height: 100px; margin-right: 10px"
-          />
-          <button
-            type="button"
-            th:attr="onclick=|deletePhoto('${foto}')|"
-            style="
-              background-color: red;
-              color: white;
-              border: none;
-              cursor: pointer;
-              padding: 5px 10px;
-            "
-          >
-            Delete
-          </button>
+      <div id="photoContainer">
+        <div
+          th:each="foto : ${aktivitas.urlFoto}"
+          th:attr="data-photo-url=${foto}"
+        >
+          <div style="display: flex; align-items: center; margin-bottom: 10px">
+            <img
+              th:src="@{'/uploads/aktivitas/' + ${foto}}"
+              style="max-width: 100px; max-height: 100px; margin-right: 10px"
+            />
+            <button
+              type="button"
+              th:attr="onclick=|deletePhoto('${foto}', event)|"
+              style="
+                background-color: red;
+                color: white;
+                border: none;
+                cursor: pointer;
+                padding: 5px 10px;
+              "
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
 
@@ -81,8 +84,11 @@
     </form>
 
     <script>
-      function deletePhoto(photoUrl) {
-        console.log(photoUrl);
+      function deletePhoto(photoUrl, event) {
+        if (event) {
+          event.preventDefault();
+        }
+        // event.preventDefault(); // Mencegah refresh halaman
         if (confirm("Apakah Anda yakin ingin menghapus foto ini?")) {
           fetch(`/aktivitas/hapus-foto`, {
             method: "POST",
@@ -93,12 +99,29 @@
           })
             .then((response) => {
               if (response.ok) {
-                location.reload(); // Refresh halaman setelah foto dihapus
+                console.log("Foto berhasil dihapus:", photoUrl);
+
+                // Hapus elemen foto dari DOM
+                const photoElement = document.querySelector(
+                  `div[data-photo-url="${photoUrl}"]`
+                );
+                if (photoElement) {
+                  photoElement.remove();
+                  console.log("Elemen berhasil dihapus dari DOM.");
+                } else {
+                  console.error(
+                    `Elemen dengan data-photo-url="${photoUrl}" tidak ditemukan di DOM.`
+                  );
+                }
               } else {
-                alert("Gagal menghapus foto!");
+                alert("Gagal menghapus foto di backend.");
               }
             })
-            .catch(() => alert("Terjadi kesalahan saat menghapus foto!"));
+            .catch(() =>
+              alert("Terjadi kesalahan saat menghapus foto di backend.")
+            );
+        } else {
+          console.log("Penghapusan foto dibatalkan.");
         }
       }
 
@@ -106,30 +129,62 @@
         const formData = new FormData();
         const files = document.getElementById("foto").files;
 
-        // Tambahkan file ke FormData
+        // Cari elemen ID Aktivitas
+        const idAktivitasInput = document.querySelector(
+          'input[name="idAktivitas"]'
+        );
+        if (!idAktivitasInput) {
+          console.error("Input untuk 'idAktivitas' tidak ditemukan.");
+          alert("Terjadi kesalahan, ID Aktivitas tidak ditemukan.");
+          return;
+        }
+
+        const idAktivitas = idAktivitasInput.value;
+
+        // Tambahkan file dan ID Aktivitas ke FormData
         for (let file of files) {
           formData.append("foto", file);
         }
-
-        // Tambahkan idAktivitas ke FormData
-        const idAktivitas = document.querySelector(
-          "input[name='idAktivitas']"
-        ).value;
         formData.append("idAktivitas", idAktivitas);
 
-        // Kirim data ke backend
+        // Kirim permintaan ke backend
         fetch(`/aktivitas/upload-foto`, {
           method: "POST",
           body: formData,
         })
           .then((response) => {
-            if (response.ok) {
-              location.reload(); // Refresh halaman setelah foto ditambahkan
-            } else {
-              alert("Gagal mengunggah foto!");
+            if (!response.ok) {
+              throw new Error("Gagal mengunggah foto");
             }
+            return response.json();
           })
-          .catch(() => alert("Terjadi kesalahan saat mengunggah foto!"));
+          .then((urls) => {
+            // Tambahkan foto baru ke halaman
+            const photoContainer = document.getElementById("photoContainer");
+
+            urls.forEach((url) => {
+              const newPhotoElement = document.createElement("div");
+              newPhotoElement.setAttribute("data-photo-url", url);
+              newPhotoElement.style.display = "flex";
+              newPhotoElement.style.alignItems = "center";
+              newPhotoElement.style.marginBottom = "10px";
+
+              // Tambahkan timestamp unik ke URL untuk menghindari cache
+              const timestamp = new Date().getTime();
+
+              newPhotoElement.innerHTML = `
+                    <img src="/uploads/aktivitas/${url}?t=${timestamp}" style="max-width: 100px; max-height: 100px; margin-right: 10px;" />
+                    <button
+                        style="background-color: red; color: white; border: none; cursor: pointer; padding: 5px 10px;"
+                        onclick="deletePhoto('${url}', event)">Delete</button>
+                `;
+              photoContainer.appendChild(newPhotoElement);
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Terjadi kesalahan saat mengunggah foto!");
+          });
       }
     </script>
   </body>

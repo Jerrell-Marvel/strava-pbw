@@ -246,6 +246,8 @@ public class AktivitasController {
   @RequiredRole("member")
   public ResponseEntity<?> hapusFoto(@RequestBody Map<String, String> body) {
     String urlFoto = body.get("urlFoto");
+    System.out.println("URL Foto yang diterima untuk dihapus: " + urlFoto);
+
     if (urlFoto == null || urlFoto.isEmpty()) {
       return ResponseEntity.badRequest().body("URL Foto tidak valid!");
     }
@@ -254,6 +256,7 @@ public class AktivitasController {
       aktivitasService.deleteFotoByUrl(urlFoto);
       return ResponseEntity.ok("Foto berhasil dihapus");
     } catch (Exception e) {
+      e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Gagal menghapus foto");
     }
   }
@@ -263,13 +266,14 @@ public class AktivitasController {
   public ResponseEntity<?> uploadFoto(
       @RequestParam("foto") MultipartFile[] foto,
       @RequestParam("idAktivitas") Integer idAktivitas) {
+
     if (idAktivitas == null) {
       return ResponseEntity.badRequest().body("ID Aktivitas tidak valid!");
     }
 
     try {
       List<String> urls = aktivitasService.uploadFoto(foto, idAktivitas);
-      return ResponseEntity.ok(urls);
+      return ResponseEntity.ok(urls); // Kembalikan URL foto yang berhasil diunggah
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Gagal mengunggah foto");
