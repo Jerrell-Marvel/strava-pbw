@@ -2,9 +2,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Daftar Aktivitas</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="/css/style.css"
+    />
+
+    <style>
+      a {
+        text-decoration: none;
+        border: 2px solid teal;
+        background: white;
+        color: teal;
+        padding: 6px;
+      }
+      a:hover {
+        color: white;
+        background: teal;
+      }
+      a:active {
+        color: white;
+        background: teal;
+      }
+      .update-form-grid {
+        display: grid;
+        grid-template-columns: 150px 10px 200px;
+        grid-template-rows: 1fr 1fr;
+      }
+
+      ul.pagination-container {
+        display: flex;
+        list-style-type: none;
+      }
+
+      ul.pagination-container a.disabled {
+        pointer-events: none;
+        color: gray;
+        cursor: not-allowed;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -55,6 +95,44 @@
           </tbody>
         </table>
       </section>
+
+      <!-- Pagination start -->
+      <nav th:if="${pageCount > 1}">
+        <ul class="pagination-container">
+          <!-- Previous Button -->
+          <li>
+            <a
+              th:href="@{/aktivitas(page=${currentPage} - 1)}"
+              aria-label="Previous"
+              th:class="${currentPage}==1 ? 'disabled' : null"
+            >
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+
+          <!-- Page Numbers -->
+          <li th:each="i : ${#numbers.sequence(1, pageCount)}">
+            <a
+              th:href="@{/aktivitas(page=${i})}"
+              th:text="${i}"
+              th:class="${currentPage}==${i} ? 'disabled' : null"
+            ></a>
+          </li>
+
+          <!-- Next Button -->
+          <li>
+            <a
+              th:href="@{/aktivitas(page=${currentPage} + 1)}"
+              aria-label="Next"
+              th:class="${currentPage}==${pageCount} ? 'disabled' : null"
+            >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- Pagination end -->
+
       <a href="/aktivitas/tambah">Tambah Aktivitas Baru</a>
     </main>
   </body>
