@@ -46,11 +46,12 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
   }
 
   @Override
-  public List<Aktivitas> findAktivitasByUserId(Integer idUser) {
+  public List<Aktivitas> findAktivitasByUserId(Integer idUser, Integer page) {
+    int offset = (page - 1) * 10;
     String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
         "a.jarak_tempuh, a.satuan_jarak, a.id_user " +
-        "FROM aktivitas a " + "WHERE a.id_user = ? AND a.is_active = true";
-    return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser);
+        "FROM aktivitas a " + "WHERE a.id_user = ? AND a.is_active = true LIMIT 10 OFFSET ?";
+    return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser, offset);
   }
 
   @Override
@@ -124,6 +125,13 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
     return Duration.ofHours(sqlTime.toLocalTime().getHour())
         .plusMinutes(sqlTime.toLocalTime().getMinute())
         .plusSeconds(sqlTime.toLocalTime().getSecond());
+  }
+
+  @Override
+  public int getAktivitasCount(Integer idUser) {
+    String queryText = "SELECT COUNT(*) FROM Aktivitas WHERE id_user = ? AND is_active = TRUE";
+    int rowCount = jdbcTemplate.queryForObject(queryText, Integer.class, idUser);
+    return rowCount;
   }
 
 }

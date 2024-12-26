@@ -10,11 +10,14 @@ public interface AktivitasRepository {
 
   void deleteAktivitas(Integer idAktivitas, Integer idUser);
 
-  List<Aktivitas> findAktivitasByUserId(Integer idUser);
+  List<Aktivitas> findAktivitasByUserId(Integer idUser, Integer page);
 
   Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser);
 
   void deleteFotoByUrl(String urlFoto);
 
   void insertFoto(Integer idAktivitas, String urlFoto);
+
+  int getAktivitasCount(Integer idUser);
+
 }

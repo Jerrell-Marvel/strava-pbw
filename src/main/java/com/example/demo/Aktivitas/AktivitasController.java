@@ -125,9 +125,12 @@ public class AktivitasController {
 
   @GetMapping("/aktivitas")
   @RequiredRole("member")
-  public String getAktivitas(Model model, HttpSession session) {
+  public String getAktivitas(@RequestParam(name = "page", required = false, defaultValue = "1") String page,
+      Model model,
+      HttpSession session) {
     Integer idUser = (Integer) session.getAttribute("idUser");
-    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser);
+    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser, Integer.parseInt(page));
+
     aktivitasList.forEach(aktivitas -> {
       if (aktivitas.getWaktuTempuh() != null) {
         long hours = aktivitas.getWaktuTempuh().toHours();
@@ -140,6 +143,13 @@ public class AktivitasController {
         System.out.println("Waktu Tempuh is null for Aktivitas ID: " + aktivitas.getIdAktivitas());
       }
     });
+
+    // pagination
+    int rowCount = aktivitasService.getAktivitasCount(idUser);
+    int pageCount = (int) Math.ceil((double) rowCount / 10);
+    model.addAttribute("pageCount", pageCount);
+    model.addAttribute("currentPage", page);
+
     model.addAttribute("aktivitasList", aktivitasList);
     return "aktivitas";
   }
