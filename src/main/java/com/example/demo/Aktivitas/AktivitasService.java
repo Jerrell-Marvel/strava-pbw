@@ -15,8 +15,8 @@ public class AktivitasService {
     aktivitasRepository.insertAktivitas(aktivitas);
   }
 
-  public List<Aktivitas> getAktivitasByUserId(Integer userId) {
-    return aktivitasRepository.findAktivitasByUserId(userId);
+  public List<Aktivitas> getAktivitasByUserId(Integer userId, Integer page) {
+    return aktivitasRepository.findAktivitasByUserId(userId, page);
   }
 
   public Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser) {
@@ -29,5 +29,9 @@ public class AktivitasService {
 
   public void deleteAktivitas(Integer idAktivitas, Integer idUser) {
     aktivitasRepository.deleteAktivitas(idAktivitas, idUser);
+  }
+
+  public int getAktivitasCount(Integer idUser) {
+    return aktivitasRepository.getAktivitasCount(idUser);
   }
 }
