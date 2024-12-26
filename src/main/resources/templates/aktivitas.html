@@ -2,15 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daftar Aktivitas</title>
-    <link
-      rel="stylesheet"
-      href="/css/style.css"
-    />
+    <link rel="stylesheet" href="/css/style.css" />
 
     <style>
       a {
@@ -58,7 +52,6 @@
               <th>No</th>
               <th>Tanggal Aktivitas</th>
               <th>Judul</th>
-              <th>Deskripsi</th>
               <th>Waktu Tempuh</th>
               <th>Jarak Tempuh</th>
               <th>Satuan Jarak</th>
@@ -68,8 +61,12 @@
             <tr th:each="aktivitas, iterStat : ${aktivitasList}">
               <td th:text="${iterStat.index + 1}"></td>
               <td th:text="${aktivitas.tanggalAktivitas}"></td>
-              <td th:text="${aktivitas.judul}"></td>
-              <td th:text="${aktivitas.deskripsi}"></td>
+              <td>
+                <a
+                  th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
+                  th:text="${aktivitas.judul}"
+                ></a>
+              </td>
               <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
               <td th:text="${aktivitas.jarakTempuh}"></td>
               <td th:text="${aktivitas.satuanJarak}"></td>

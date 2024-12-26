@@ -289,4 +289,27 @@ public class AktivitasController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Gagal mengunggah foto");
     }
   }
+
+  @GetMapping("/aktivitas/detail/{id}")
+  @RequiredRole("member")
+  public String getDetailAktivitas(@PathVariable("id") Integer idAktivitas, Model model, HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
+    Aktivitas aktivitas = aktivitasService.getAktivitasById(idAktivitas, idUser);
+
+    if (aktivitas == null) {
+      return "redirect:/aktivitas"; // Redirect jika aktivitas tidak ditemukan
+    }
+
+    if (aktivitas.getWaktuTempuh() != null) {
+      long hours = aktivitas.getWaktuTempuh().toHours();
+      long minutes = aktivitas.getWaktuTempuh().toMinutes() % 60;
+      long seconds = aktivitas.getWaktuTempuh().getSeconds() % 60;
+      String formatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+      aktivitas.setFormattedWaktuTempuh(formatted);
+      System.out.println("Formatted Waktu Tempuh: " + formatted); // Debug log
+    }
+
+    model.addAttribute("aktivitas", aktivitas);
+    return "detail-aktivitas";
+  }
 }
