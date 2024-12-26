@@ -39,7 +39,6 @@ public class AktivitasService {
     aktivitasRepository.deleteAktivitas(idAktivitas, idUser);
   }
 
-
   public void deleteFotoByUrl(String urlFoto) {
     aktivitasRepository.deleteFotoByUrl(urlFoto);
   }
@@ -69,6 +68,7 @@ public class AktivitasService {
       }
     }
     return urls;
+  }
 
   public int getAktivitasCount(Integer idUser) {
     return aktivitasRepository.getAktivitasCount(idUser);
