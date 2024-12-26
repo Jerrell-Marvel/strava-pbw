@@ -94,6 +94,18 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
     }
   }
 
+  @Override
+  public void deleteFotoByUrl(String urlFoto) {
+    String sql = "UPDATE foto_aktivitas SET is_active = FALSE WHERE url_foto = ?";
+    jdbcTemplate.update(sql, urlFoto);
+  }
+
+  @Override
+  public void insertFoto(Integer idAktivitas, String urlFoto) {
+    String sql = "INSERT INTO foto_aktivitas (id_aktivitas, url_foto) VALUES (?, ?)";
+    jdbcTemplate.update(sql, idAktivitas, urlFoto);
+  }
+
   private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
     return new Aktivitas(
         resultSet.getInt("id_aktivitas"),
