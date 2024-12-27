@@ -120,6 +120,33 @@ public class JdbcLombaRepository implements LombaRepository {
         rs.getDate("tanggal_selesai").toLocalDate()), idUser);
   }
 
+  public List<LombaBerlangsung> findLombaBerlangsungWithStatus(Integer idUser, int offset, int pageSize) {
+    String sql = """
+            SELECT l.id_lomba, l.nama_lomba, l.deskripsi_lomba, l.tanggal_mulai, l.tanggal_selesai,
+                   CASE WHEN lm.id_user IS NOT NULL THEN TRUE ELSE FALSE END AS status_mengikuti
+            FROM Lomba l
+            LEFT JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba AND lm.id_user = ?
+            WHERE CURRENT_DATE BETWEEN l.tanggal_mulai AND l.tanggal_selesai
+            LIMIT ? OFFSET ?
+        """;
+    return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaBerlangsung(
+        rs.getInt("id_lomba"),
+        rs.getString("nama_lomba"),
+        rs.getString("deskripsi_lomba"),
+        rs.getDate("tanggal_mulai").toLocalDate(),
+        rs.getDate("tanggal_selesai").toLocalDate(),
+        rs.getBoolean("status_mengikuti")), idUser, pageSize, offset);
+  }
+
+  public int getLombaBerlangsungWithStatusCount() {
+    String sql = """
+            SELECT COUNT(*)
+            FROM Lomba l
+            WHERE CURRENT_DATE BETWEEN l.tanggal_mulai AND l.tanggal_selesai
+        """;
+    return jdbcTemplate.queryForObject(sql, Integer.class);
+  }
+
   private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
     return new Aktivitas(
         resultSet.getInt("id_aktivitas"),
