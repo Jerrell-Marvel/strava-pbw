@@ -34,7 +34,9 @@ CREATE TABLE Foto_Aktivitas (
 CREATE TABLE Lomba (
     id_lomba SERIAL PRIMARY KEY,
     nama_lomba VARCHAR(255) NOT NULL,
-    deskripsi_lomba TEXT
+    deskripsi_lomba TEXT,
+    tanggal_mulai DATE NOT NULL,
+    tanggal_selesai DATE NOT NULL
 );
 
 CREATE TABLE Lomba_Member (
