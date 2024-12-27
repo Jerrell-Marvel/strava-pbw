@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Leaderboard</title>
+  </head>
+  <body>
+    <header>
+      <h1>Leaderboard</h1>
+      <a href="/admin/lomba">Kembali ke Daftar Lomba</a>
+    </header>
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Nama Member</th>
+            <th>Jarak Tempuh</th>
+            <th>Waktu Tempuh</th>
+            <th>Skor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="entry, iterStat : ${leaderboard}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${entry.namaUser}"></td>
+            <td th:text="${entry.jarakTempuh}"></td>
+            <td th:text="${entry.waktuTempuh}"></td>
+            <td th:text="${entry.skor}"></td>
+          </tr>
+          <tr th:if="${leaderboard.isEmpty()}">
+            <td colspan="5">Belum ada aktivitas pada lomba ini.</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
