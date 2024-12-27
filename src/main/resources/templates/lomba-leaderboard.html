@@ -6,7 +6,6 @@
   <body>
     <header>
       <h1>Leaderboard</h1>
-      <a href="/admin/lomba">Kembali ke Daftar Lomba</a>
     </header>
     <main>
       <table>
@@ -24,7 +23,7 @@
             <td th:text="${iterStat.index + 1}"></td>
             <td th:text="${entry.namaUser}"></td>
             <td th:text="${entry.jarakTempuh}"></td>
-            <td th:text="${entry.waktuTempuh}"></td>
+            <td th:text="${entry.formattedWaktuTempuh}"></td>
             <td th:text="${entry.skor}"></td>
           </tr>
           <tr th:if="${leaderboard.isEmpty()}">
