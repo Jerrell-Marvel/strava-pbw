@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.RequiredRole;
+import com.example.demo.Aktivitas.Aktivitas;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -39,7 +41,6 @@ public class LombaController {
   }
 
   @GetMapping("/lomba/{id}/leaderboard")
-  @RequiredRole("admin")
   public String getLeaderboard(@PathVariable("id") Integer idLomba, Model model) {
     List<Leaderboard> leaderboard = lombaService.getLeaderboardByLombaId(idLomba);
     model.addAttribute("leaderboard", leaderboard);
@@ -61,6 +62,56 @@ public class LombaController {
     }
     lombaService.addLomba(lomba);
     return "redirect:/admin/lomba";
+  }
+
+  @GetMapping("/member/lomba/berlangsung")
+  @RequiredRole("member")
+  public String getLombaBerlangsung(
+      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+      Model model) {
+    int pageSize = 10;
+    List<Lomba> lombaList = lombaService.getLombaBerlangsung(page, pageSize);
+    int totalLomba = lombaService.getLombaBerlangsungCount();
+    int pageCount = (int) Math.ceil((double) totalLomba / pageSize);
+
+    model.addAttribute("lombaList", lombaList);
+    model.addAttribute("currentPage", page);
+    model.addAttribute("pageCount", pageCount);
+
+    return "lomba-berlangsung";
+  }
+
+  @GetMapping("/member/lomba/{id}/pilih-aktivitas")
+  @RequiredRole("member")
+  public String pilihAktivitas(
+      @PathVariable("id") Integer idLomba,
+      Model model,
+      HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
+    List<Aktivitas> aktivitasList = lombaService.getAktivitasNotInLombaMember(idUser, idLomba);
+    model.addAttribute("aktivitasList", aktivitasList);
+    model.addAttribute("idLomba", idLomba);
+    return "pilih-aktivitas";
+  }
+
+  @PostMapping("/member/lomba/{id}/pilih-aktivitas")
+  @RequiredRole("member")
+  public String submitAktivitas(
+      @PathVariable("id") Integer idLomba,
+      @RequestParam("idAktivitas") Integer idAktivitas,
+      HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
+    lombaService.addLombaMember(idLomba, idUser, idAktivitas);
+    return "redirect:/member/lomba/diikuti";
+  }
+
+  @GetMapping("/member/lomba/diikuti")
+  @RequiredRole("member")
+  public String lombaDiikuti(Model model, HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
+    List<LombaMember> lombaDiikuti = lombaService.getLombaDiikuti(idUser);
+    model.addAttribute("lombaDiikuti", lombaDiikuti);
+    return "lomba-diikuti";
   }
 
 }

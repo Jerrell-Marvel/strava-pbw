@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Pilih Aktivitas</title>
+  </head>
+  <body>
+    <header>
+      <h1>Pilih Aktivitas</h1>
+    </header>
+    <main>
+      <form
+        th:action="@{/member/lomba/{id}/pilih-aktivitas(id=${idLomba})}"
+        method="post"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Pilih</th>
+              <th>Tanggal Aktivitas</th>
+              <th>Judul</th>
+              <th>Waktu Tempuh</th>
+              <th>Jarak Tempuh</th>
+              <th>Satuan Jarak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="aktivitas : ${aktivitasList}">
+              <td>
+                <input
+                  type="radio"
+                  th:value="${aktivitas.idAktivitas}"
+                  name="idAktivitas"
+                />
+              </td>
+              <td th:text="${aktivitas.tanggalAktivitas}"></td>
+              <td>
+                <a
+                  th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
+                  th:text="${aktivitas.judul}"
+                ></a>
+              </td>
+              <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
+              <td th:text="${aktivitas.jarakTempuh}"></td>
+              <td th:text="${aktivitas.satuanJarak}"></td>
+            </tr>
+            <tr th:if="${aktivitasList.isEmpty()}">
+              <td colspan="6">Tidak ada aktivitas tersedia.</td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="submit">Pilih Aktivitas</button>
+      </form>
+    </main>
+  </body>
+</html>

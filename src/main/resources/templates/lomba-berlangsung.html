@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Lomba Berlangsung</title>
+  </head>
+  <body>
+    <header>
+      <h1>Lomba Berlangsung</h1>
+    </header>
+    <main>
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama Lomba</th>
+              <th>Deskripsi</th>
+              <th>Tanggal Mulai</th>
+              <th>Tanggal Selesai</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="lomba, iterStat : ${lombaList}">
+              <td th:text="${(currentPage - 1) * 10 + iterStat.index + 1}"></td>
+              <td th:text="${lomba.namaLomba}"></td>
+              <td th:text="${lomba.deskripsiLomba}"></td>
+              <td th:text="${lomba.tanggalMulai}"></td>
+              <td th:text="${lomba.tanggalSelesai}"></td>
+              <td>
+                <a
+                  th:href="@{/member/lomba/{id}/pilih-aktivitas(id=${lomba.idLomba})}"
+                  >Ikuti Lomba</a
+                >
+              </td>
+            </tr>
+            <tr th:if="${lombaList.isEmpty()}">
+              <td colspan="6">Tidak ada lomba berlangsung.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Pagination -->
+      <nav th:if="${pageCount > 1}">
+        <ul class="pagination-container">
+          <!-- Previous -->
+          <li>
+            <a
+              th:href="@{/member/lomba/berlangsung(page=${currentPage - 1})}"
+              th:class="${currentPage}==1 ? 'disabled' : null"
+              >&laquo;</a
+            >
+          </li>
+          <!-- Pages -->
+          <li th:each="i : ${#numbers.sequence(1, pageCount)}">
+            <a
+              th:href="@{/member/lomba/berlangsung(page=${i})}"
+              th:text="${i}"
+              th:class="${currentPage}==${i} ? 'disabled' : null"
+            ></a>
+          </li>
+          <!-- Next -->
+          <li>
+            <a
+              th:href="@{/member/lomba/berlangsung(page=${currentPage + 1})}"
+              th:class="${currentPage}==${pageCount} ? 'disabled' : null"
+              >&raquo;</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </main>
+  </body>
+</html>

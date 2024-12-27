@@ -2,11 +2,14 @@ package com.example.demo.Lomba;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.example.demo.Aktivitas.Aktivitas;
 
 @Repository
 public class JdbcLombaRepository implements LombaRepository {
@@ -61,6 +64,81 @@ public class JdbcLombaRepository implements LombaRepository {
     String sql = "INSERT INTO Lomba (nama_lomba, deskripsi_lomba, tanggal_mulai, tanggal_selesai) VALUES (?, ?, ?, ?)";
     jdbcTemplate.update(sql, lomba.getNamaLomba(), lomba.getDeskripsiLomba(), lomba.getTanggalMulai(),
         lomba.getTanggalSelesai());
+  }
+
+  public List<Lomba> findLombaBerlangsung(int offset, int pageSize) {
+    String sql = """
+            SELECT * FROM Lomba
+            WHERE CURRENT_DATE BETWEEN tanggal_mulai AND tanggal_selesai
+            LIMIT ? OFFSET ?
+        """;
+    return jdbcTemplate.query(sql, this::mapRowToLomba, pageSize, offset);
+  }
+
+  public int getLombaBerlangsungCount() {
+    String sql = """
+            SELECT COUNT(*) FROM Lomba
+            WHERE CURRENT_DATE BETWEEN tanggal_mulai AND tanggal_selesai
+        """;
+    return jdbcTemplate.queryForObject(sql, Integer.class);
+  }
+
+  public List<Aktivitas> findAktivitasNotInLombaMember(Integer idUser, Integer idLomba) {
+    String sql = """
+            SELECT a.*
+            FROM Aktivitas a
+            LEFT JOIN Lomba_Member lm ON a.id_aktivitas = lm.id_aktivitas
+            JOIN Lomba l ON l.id_lomba = ?
+            WHERE a.id_user = ?
+              AND lm.id_aktivitas IS NULL
+              AND a.tanggal_aktivitas BETWEEN l.tanggal_mulai AND l.tanggal_selesai
+        """;
+    return jdbcTemplate.query(sql, this::mapRowToAktivitas, idLomba, idUser);
+  }
+
+  public void insertLombaMember(Integer idLomba, Integer idUser, Integer idAktivitas) {
+    String sql = "INSERT INTO Lomba_Member (id_lomba, id_user, id_aktivitas) VALUES (?, ?, ?)";
+    jdbcTemplate.update(sql, idLomba, idUser, idAktivitas);
+  }
+
+  public List<LombaMember> findLombaDiikutiByUser(Integer idUser) {
+    String sql = """
+            SELECT l.id_lomba, l.nama_lomba, l.deskripsi_lomba,
+                   lm.id_aktivitas, a.judul, l.tanggal_mulai, l.tanggal_selesai
+            FROM Lomba l
+            JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba
+            JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
+            WHERE lm.id_user = ?
+        """;
+    return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaMember(
+        rs.getInt("id_lomba"),
+        rs.getString("nama_lomba"),
+        rs.getString("deskripsi_lomba"),
+        rs.getInt("id_aktivitas"),
+        rs.getString("judul"),
+        rs.getDate("tanggal_mulai").toLocalDate(),
+        rs.getDate("tanggal_selesai").toLocalDate()), idUser);
+  }
+
+  private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
+    return new Aktivitas(
+        resultSet.getInt("id_aktivitas"),
+        resultSet.getDate("tanggal_aktivitas").toLocalDate(),
+        resultSet.getString("judul"),
+        resultSet.getString("deskripsi"),
+        convertTimeToDuration(resultSet.getTime("waktu_tempuh")),
+        resultSet.getDouble("jarak_tempuh"),
+        resultSet.getString("satuan_jarak"),
+        resultSet.getInt("id_user"));
+  }
+
+  private Duration convertTimeToDuration(java.sql.Time sqlTime) {
+    if (sqlTime == null) {
+      return null;
+    }
+    return Duration.ofHours(sqlTime.toLocalTime().getHour())
+        .plusMinutes(sqlTime.toLocalTime().getMinute())
+        .plusSeconds(sqlTime.toLocalTime().getSecond());
   }
 
 }
