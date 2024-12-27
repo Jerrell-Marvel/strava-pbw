@@ -55,4 +55,13 @@ public class LombaService {
     return lombaRepository.findLombaDiikutiByUser(idUser);
   }
 
+  public List<LombaBerlangsung> getLombaBerlangsungWithStatus(Integer idUser, int page, int pageSize) {
+    int offset = (page - 1) * pageSize;
+    return lombaRepository.findLombaBerlangsungWithStatus(idUser, offset, pageSize);
+  }
+
+  public int getLombaBerlangsungWithStatusCount() {
+    return lombaRepository.getLombaBerlangsungWithStatusCount();
+  }
+
 }

@@ -24,4 +24,8 @@ public interface LombaRepository {
   void insertLombaMember(Integer idLomba, Integer idUser, Integer idAktivitas);
 
   List<LombaMember> findLombaDiikutiByUser(Integer idUser);
+
+  List<LombaBerlangsung> findLombaBerlangsungWithStatus(Integer idUser, int offset, int pageSize);
+
+  int getLombaBerlangsungWithStatusCount();
 }

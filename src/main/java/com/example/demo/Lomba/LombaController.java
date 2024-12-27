@@ -43,6 +43,7 @@ public class LombaController {
   @GetMapping("/lomba/{id}/leaderboard")
   public String getLeaderboard(@PathVariable("id") Integer idLomba, Model model) {
     List<Leaderboard> leaderboard = lombaService.getLeaderboardByLombaId(idLomba);
+
     model.addAttribute("leaderboard", leaderboard);
     return "lomba-leaderboard";
   }
@@ -68,10 +69,13 @@ public class LombaController {
   @RequiredRole("member")
   public String getLombaBerlangsung(
       @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-      Model model) {
+      Model model,
+      HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
     int pageSize = 10;
-    List<Lomba> lombaList = lombaService.getLombaBerlangsung(page, pageSize);
-    int totalLomba = lombaService.getLombaBerlangsungCount();
+
+    List<LombaBerlangsung> lombaList = lombaService.getLombaBerlangsungWithStatus(idUser, page, pageSize);
+    int totalLomba = lombaService.getLombaBerlangsungWithStatusCount();
     int pageCount = (int) Math.ceil((double) totalLomba / pageSize);
 
     model.addAttribute("lombaList", lombaList);
