@@ -2,15 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Lomba Berlangsung</title>
+
+    <link
+      href="/css/output.css"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <header>
-      <h1>Lomba Berlangsung</h1>
-    </header>
-    <main>
-      <section>
-        <table>
-          <thead>
+  <body class="flex justify-center">
+    <div class="w-2/3 pt-20">
+      <header class="mb-6">
+        <h1 class="text-4xl font-semibold">Lomba Berlangsung</h1>
+      </header>
+      <main>
+        <table class="table-auto w-full text-base">
+          <thead class="text-base uppercase bg-gray-100">
             <tr>
               <th>No</th>
               <th>Nama Lomba</th>
@@ -21,9 +26,15 @@
               <th>Aksi</th>
             </tr>
           </thead>
-          <tbody>
-            <tr th:each="lomba, iterStat : ${lombaList}">
-              <td th:text="${(currentPage - 1) * 10 + iterStat.index + 1}"></td>
+          <tbody class="text-center">
+            <tr
+              th:each="lomba, iterStat : ${lombaList}"
+              class="even:bg-gray-100"
+            >
+              <td
+                th:text="${(currentPage - 1) * 10 + iterStat.index + 1}"
+                class="py-4"
+              ></td>
               <td th:text="${lomba.namaLomba}"></td>
               <td th:text="${lomba.deskripsiLomba}"></td>
               <td th:text="${lomba.tanggalMulai}"></td>
@@ -35,6 +46,7 @@
                 <a
                   th:if="${!lomba.statusMengikuti}"
                   th:href="@{/member/lomba/{id}/pilih-aktivitas(id=${lomba.idLomba})}"
+                  class="text-blue-500 hover:text-blue-300"
                 >
                   Ikuti Lomba
                 </a>
@@ -46,37 +58,52 @@
             </tr>
           </tbody>
         </table>
-      </section>
 
-      <!-- Pagination -->
-      <nav th:if="${pageCount > 1}">
-        <ul class="pagination-container">
-          <!-- Previous -->
-          <li>
-            <a
-              th:href="@{/member/lomba/berlangsung(page=${currentPage - 1})}"
-              th:class="${currentPage}==1 ? 'disabled' : null"
-              >&laquo;</a
+        <!-- Pagination -->
+
+        <!-- Pagination start -->
+        <nav
+          th:if="${pageCount > 1}"
+          class="flex justify-end"
+        >
+          <ul class="pagination-container flex text-lg">
+            <!-- Previous Button -->
+            <li class="prev-btn">
+              <a
+                th:href="@{/member/lomba/berlangsung(page=${currentPage} - 1)}"
+                aria-label="Previous"
+                th:class="${currentPage}==1 ? 'disabled' : null"
+              >
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+
+            <!-- Page Numbers -->
+            <li
+              th:each="i : ${#numbers.sequence(1, pageCount)}"
+              class="pagination-link"
             >
-          </li>
-          <!-- Pages -->
-          <li th:each="i : ${#numbers.sequence(1, pageCount)}">
-            <a
-              th:href="@{/member/lomba/berlangsung(page=${i})}"
-              th:text="${i}"
-              th:class="${currentPage}==${i} ? 'disabled' : null"
-            ></a>
-          </li>
-          <!-- Next -->
-          <li>
-            <a
-              th:href="@{/member/lomba/berlangsung(page=${currentPage + 1})}"
-              th:class="${currentPage}==${pageCount} ? 'disabled' : null"
-              >&raquo;</a
-            >
-          </li>
-        </ul>
-      </nav>
-    </main>
+              <a
+                th:href="@{/member/lomba/berlangsung(page=${i})}"
+                th:text="${i}"
+                th:class="${currentPage}==${i} ? 'disabled' : null"
+              ></a>
+            </li>
+
+            <!-- Next Button -->
+            <li class="next-btn">
+              <a
+                th:href="@{/member/lomba/berlangsung(page=${currentPage} + 1)}"
+                aria-label="Next"
+                th:class="${currentPage}==${pageCount} ? 'disabled' : null"
+              >
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- Pagination end -->
+      </main>
+    </div>
   </body>
 </html>
