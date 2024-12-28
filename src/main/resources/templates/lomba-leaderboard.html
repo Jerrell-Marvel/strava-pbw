@@ -15,7 +15,7 @@
             <th>Nama Member</th>
             <th>Jarak Tempuh</th>
             <th>Waktu Tempuh</th>
-            <th>Skor</th>
+            <th>Avg Pace</th>
           </tr>
         </thead>
         <tbody>
@@ -24,7 +24,8 @@
             <td th:text="${entry.namaUser}"></td>
             <td th:text="${entry.jarakTempuh}"></td>
             <td th:text="${entry.formattedWaktuTempuh}"></td>
-            <td th:text="${entry.skor}"></td>
+            <!-- <td th:text="${entry.skor}"></td> -->
+            <td th:text="${entry.formattedAvgPace} + ' /km'"></td>
           </tr>
           <tr th:if="${leaderboard.isEmpty()}">
             <td colspan="5">Belum ada aktivitas pada lomba ini.</td>

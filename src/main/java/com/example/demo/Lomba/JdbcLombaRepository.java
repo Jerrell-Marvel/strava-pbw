@@ -41,23 +41,56 @@ public class JdbcLombaRepository implements LombaRepository {
         resultSet.getDate("tanggal_selesai").toLocalDate());
   }
 
+  // public List<Leaderboard> findLeaderboardByLombaId(Integer idLomba) {
+  // String sql = """
+  // SELECT lm.id_user, u.nama_user, a.jarak_tempuh, a.waktu_tempuh,
+  // a.satuan_jarak,
+  // (CASE
+  // WHEN a.satuan_jarak = 'm' THEN a.jarak_tempuh / 1000
+  // WHEN a.satuan_jarak = 'mil' THEN a.jarak_tempuh * 1.60934
+  // WHEN a.satuan_jarak = 'yard' THEN a.jarak_tempuh * 0.0009144
+  // ELSE a.jarak_tempuh -- Default assumed as kilometer
+  // END) / (EXTRACT(EPOCH FROM a.waktu_tempuh) / 3600) AS skor
+  // FROM Lomba_Member lm
+  // JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
+  // JOIN Users u ON lm.id_user = u.id_user
+  // WHERE lm.id_lomba = ?
+  // ORDER BY skor DESC
+  // """;
+
+  // return jdbcTemplate.query(sql, (rs, rowNum) -> new Leaderboard(
+  // rs.getInt("id_user"),
+  // rs.getString("nama_user"),
+  // rs.getDouble("jarak_tempuh"), // Jarak tempuh asli
+  // rs.getTime("waktu_tempuh").toLocalTime(), // Waktu tempuh asli
+  // rs.getDouble("skor") // Skor dalam km/h
+  // ), idLomba);
+  // }
+
   public List<Leaderboard> findLeaderboardByLombaId(Integer idLomba) {
     String sql = """
-            SELECT lm.id_user, u.nama_user, a.jarak_tempuh, a.waktu_tempuh,
-                   (a.jarak_tempuh / EXTRACT(EPOCH FROM a.waktu_tempuh)) AS skor
+            SELECT lm.id_user, u.nama_user, a.jarak_tempuh, a.waktu_tempuh, a.satuan_jarak,
+                   (EXTRACT(EPOCH FROM a.waktu_tempuh) /
+                   CASE
+                       WHEN a.satuan_jarak = 'm' THEN a.jarak_tempuh / 1000
+                       WHEN a.satuan_jarak = 'mil' THEN a.jarak_tempuh * 1.60934
+                       WHEN a.satuan_jarak = 'yard' THEN a.jarak_tempuh * 0.0009144
+                       ELSE a.jarak_tempuh -- Default assumed as kilometer
+                   END) AS avg_pace
             FROM Lomba_Member lm
             JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
             JOIN Users u ON lm.id_user = u.id_user
             WHERE lm.id_lomba = ?
-            ORDER BY skor DESC
+            ORDER BY avg_pace ASC -- Lower pace (faster) is better
         """;
 
     return jdbcTemplate.query(sql, (rs, rowNum) -> new Leaderboard(
         rs.getInt("id_user"),
         rs.getString("nama_user"),
-        rs.getDouble("jarak_tempuh"),
-        rs.getTime("waktu_tempuh").toLocalTime(),
-        rs.getDouble("skor")), idLomba);
+        rs.getDouble("jarak_tempuh"), // Jarak tempuh asli
+        rs.getTime("waktu_tempuh").toLocalTime(), // Waktu tempuh asli
+        rs.getDouble("avg_pace") // Avg pace dalam detik per kilometer
+    ), idLomba);
   }
 
   public void insertLomba(Lomba lomba) {
