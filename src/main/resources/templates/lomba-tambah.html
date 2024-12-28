@@ -2,36 +2,71 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Tambah Lomba</title>
+
+    <link
+      href="/css/output.css"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <header>
-      <h1>Tambah Lomba</h1>
-      <a href="/admin/lomba">Kembali ke Daftar Lomba</a>
-    </header>
-    <main>
-      <form
-        th:action="@{/admin/lomba/tambah}"
-        method="post"
-        th:object="${lomba}"
-      >
-        <div>
-          <label>Nama Lomba</label>
-          <input type="text" th:field="*{namaLomba}" required />
-        </div>
-        <div>
-          <label>Deskripsi Lomba</label>
-          <textarea th:field="*{deskripsiLomba}" required></textarea>
-        </div>
-        <div>
-          <label>Tanggal Mulai</label>
-          <input type="date" th:field="*{tanggalMulai}" required />
-        </div>
-        <div>
-          <label>Tanggal Selesai</label>
-          <input type="date" th:field="*{tanggalSelesai}" required />
-        </div>
-        <button type="submit">Simpan</button>
-      </form>
-    </main>
+
+  <body class="flex justify-center">
+    <div class="w-2/3 pt-20">
+      <header class="mb-4">
+        <h1 class="text-4xl font-semibold">Tambah Lomba</h1>
+      </header>
+      <main>
+        <form
+          th:action="@{/admin/lomba/tambah}"
+          method="post"
+          th:object="${lomba}"
+          class="grid grid-cols-2 gap-6"
+        >
+          <div>
+            <label for="nama-lomba">Nama Lomba</label>
+            <input
+              type="text"
+              th:field="*{namaLomba}"
+              required
+              id="nama-lomba"
+              class="block w-full input"
+            />
+          </div>
+          <div>
+            <label>Deskripsi Lomba</label>
+            <textarea
+              th:field="*{deskripsiLomba}"
+              required
+              class="input block w-full h-32"
+            ></textarea>
+          </div>
+          <div>
+            <label>Tanggal Mulai</label>
+            <input
+              type="date"
+              th:field="*{tanggalMulai}"
+              required
+              class="input block w-full"
+            />
+          </div>
+          <div>
+            <label>Tanggal Selesai</label>
+            <input
+              type="date"
+              th:field="*{tanggalSelesai}"
+              required
+              class="input block w-full"
+            />
+          </div>
+          <div class="flex justify-end col-[2/3]">
+            <button
+              type="submit"
+              class="text-base font-semibold text-white bg-orange-500 px-3 py-2 hover:bg-orange-300 rounded-md w-fit"
+            >
+              Simpan
+            </button>
+          </div>
+        </form>
+      </main>
+    </div>
   </body>
 </html>
