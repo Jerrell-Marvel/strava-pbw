@@ -12,4 +12,30 @@
   .input {
     @apply border-slate-400 border-2 py-1 px-2 rounded-md;
   }
+
+  .pagination-link {
+    @apply no-underline p-1.5;
+  }
+
+  .pagination-link a.disabled {
+    @apply text-orange-500 border-b border-orange-500 font-semibold;
+  }
+
+  .next-btn,
+  .prev-btn {
+    @apply p-1.5 flex items-center;
+  }
+
+  .next-btn a.disabled,
+  .prev-btn a.disabled {
+    @apply pointer-events-none text-gray-400 cursor-not-allowed;
+  }
+
+  ul.pagination-container {
+    @apply flex list-none;
+  }
+
+  ul.pagination-container a.disabled {
+    @apply pointer-events-none cursor-not-allowed;
+  }
 }

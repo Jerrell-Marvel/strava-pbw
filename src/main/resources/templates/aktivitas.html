@@ -2,46 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Daftar Aktivitas</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <link href="/css/output.css" rel="stylesheet" />
-    <style>
-      .pagination-link {
-        text-decoration: none;
-        border: 2px solid #f97316;
-        background: white;
-        color: #f97316;
-        padding: 6px;
-      }
-
-      .pagination-link:hover {
-        color: white;
-        background: #f97316;
-      }
-
-      .pagination-link:active {
-        color: white;
-        background: #f97316;
-      }
-
-      .update-form-grid {
-        display: grid;
-        grid-template-columns: 150px 10px 200px;
-        grid-template-rows: 1fr 1fr;
-      }
-
-      ul.pagination-container {
-        display: flex;
-        list-style-type: none;
-      }
-
-      ul.pagination-container a.disabled {
-        pointer-events: none;
-        color: #f97316;
-        cursor: not-allowed;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="/css/style.css"
+    />
+    <link
+      href="/css/output.css"
+      rel="stylesheet"
+    />
   </head>
   <body class="flex justify-center">
     <div class="w-2/3 pt-20">
@@ -114,9 +87,9 @@
 
         <!-- Pagination start -->
         <nav th:if="${pageCount > 1}">
-          <ul class="pagination-container flex">
+          <ul class="pagination-container flex text-lg">
             <!-- Previous Button -->
-            <li class="pagination-link">
+            <li class="prev-btn">
               <a
                 th:href="@{/aktivitas(page=${currentPage} - 1)}"
                 aria-label="Previous"
@@ -139,7 +112,7 @@
             </li>
 
             <!-- Next Button -->
-            <li class="pagination-link">
+            <li class="next-btn">
               <a
                 th:href="@{/aktivitas(page=${currentPage} + 1)}"
                 aria-label="Next"
