@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daftar Aktivitas</title>
     <link rel="stylesheet" href="/css/style.css" />
-
+    <link href="/css/output.css" rel="stylesheet" />
     <style>
-      a {
+      /* a {
         text-decoration: none;
         border: 2px solid teal;
         background: white;
@@ -37,100 +37,107 @@
         pointer-events: none;
         color: gray;
         cursor: not-allowed;
-      }
+      } */
     </style>
   </head>
-  <body>
-    <header>
-      <h1>Daftar Aktivitas</h1>
-    </header>
-    <main>
-      <section>
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Tanggal Aktivitas</th>
-              <th>Judul</th>
-              <th>Waktu Tempuh</th>
-              <th>Jarak Tempuh</th>
-              <th>Satuan Jarak</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="aktivitas, iterStat : ${aktivitasList}">
-              <td th:text="${iterStat.index + 1}"></td>
-              <td th:text="${aktivitas.tanggalAktivitas}"></td>
-              <td>
-                <a
-                  th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
-                  th:text="${aktivitas.judul}"
-                ></a>
-              </td>
-              <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
-              <td th:text="${aktivitas.jarakTempuh}"></td>
-              <td th:text="${aktivitas.satuanJarak}"></td>
-              <td>
-                <a
-                  th:href="@{/aktivitas/edit/{id}(id=${aktivitas.idAktivitas})}"
-                  class="btn btn-primary"
-                  >Edit</a
-                >
-              </td>
-              <td>
-                <a
-                  th:href="@{/aktivitas/hapus/{id}(id=${aktivitas.idAktivitas})}"
-                  onclick="return confirm('Apakah Anda yakin ingin menghapus aktivitas ini?');"
-                  class="btn btn-danger"
-                  >Hapus</a
-                >
-              </td>
-            </tr>
-            <tr th:if="${aktivitasList.isEmpty()}">
-              <td colspan="8">Tidak ada aktivitas.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Pagination start -->
-      <nav th:if="${pageCount > 1}">
-        <ul class="pagination-container">
-          <!-- Previous Button -->
-          <li>
-            <a
-              th:href="@{/aktivitas(page=${currentPage} - 1)}"
-              aria-label="Previous"
-              th:class="${currentPage}==1 ? 'disabled' : null"
+  <body class="flex justify-center">
+    <div class="w-2/3 mt-20">
+      <header class="pb-5">
+        <h1 class="text-4xl font-semibold">Daftar Aktivitas</h1>
+      </header>
+      <main>
+        <section>
+          <table class="table-auto w-full text-base">
+            <thead
+              class="text-base uppercase bg-gray-200 border-b-[2px solid #ddd]"
             >
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
+              <tr>
+                <th>No</th>
+                <th>Tanggal Aktivitas</th>
+                <th>Judul</th>
+                <th>Waktu Tempuh</th>
+                <th>Jarak Tempuh</th>
+                <th>Satuan Jarak</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="aktivitas, iterStat : ${aktivitasList}">
+                <td th:text="${iterStat.index + 1}"></td>
+                <td th:text="${aktivitas.tanggalAktivitas}"></td>
+                <td>
+                  <a
+                    th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
+                    th:text="${aktivitas.judul}"
+                    class=""
+                  ></a>
+                </td>
+                <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
+                <td th:text="${aktivitas.jarakTempuh}"></td>
+                <td th:text="${aktivitas.satuanJarak}"></td>
+                <td>
+                  <a
+                    th:href="@{/aktivitas/edit/{id}(id=${aktivitas.idAktivitas})}"
+                    class="btn btn-primary"
+                    >Edit</a
+                  >
+                </td>
+                <td>
+                  <a
+                    th:href="@{/aktivitas/hapus/{id}(id=${aktivitas.idAktivitas})}"
+                    onclick="return confirm('Apakah Anda yakin ingin menghapus aktivitas ini?');"
+                    class="btn btn-danger"
+                    >Hapus</a
+                  >
+                </td>
+              </tr>
+              <tr th:if="${aktivitasList.isEmpty()}">
+                <td colspan="8">Tidak ada aktivitas.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-          <!-- Page Numbers -->
-          <li th:each="i : ${#numbers.sequence(1, pageCount)}">
-            <a
-              th:href="@{/aktivitas(page=${i})}"
-              th:text="${i}"
-              th:class="${currentPage}==${i} ? 'disabled' : null"
-            ></a>
-          </li>
+        <!-- Pagination start -->
+        <nav th:if="${pageCount > 1}">
+          <ul class="pagination-container">
+            <!-- Previous Button -->
+            <li>
+              <a
+                th:href="@{/aktivitas(page=${currentPage} - 1)}"
+                aria-label="Previous"
+                th:class="${currentPage}==1 ? 'disabled' : null"
+              >
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
 
-          <!-- Next Button -->
-          <li>
-            <a
-              th:href="@{/aktivitas(page=${currentPage} + 1)}"
-              aria-label="Next"
-              th:class="${currentPage}==${pageCount} ? 'disabled' : null"
-            >
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <!-- Pagination end -->
+            <!-- Page Numbers -->
+            <li th:each="i : ${#numbers.sequence(1, pageCount)}">
+              <a
+                th:href="@{/aktivitas(page=${i})}"
+                th:text="${i}"
+                th:class="${currentPage}==${i} ? 'disabled' : null"
+              ></a>
+            </li>
 
-      <a href="/aktivitas/tambah">Tambah Aktivitas Baru</a>
-    </main>
+            <!-- Next Button -->
+            <li>
+              <a
+                th:href="@{/aktivitas(page=${currentPage} + 1)}"
+                aria-label="Next"
+                th:class="${currentPage}==${pageCount} ? 'disabled' : null"
+              >
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- Pagination end -->
+
+        <a href="/aktivitas/tambah">Tambah Aktivitas Baru</a>
+      </main>
+    </div>
   </body>
 </html>

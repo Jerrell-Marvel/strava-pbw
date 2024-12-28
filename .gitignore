@@ -37,3 +37,6 @@ out/
 .vscode/
 
 /src/main/resources/static/uploads/aktivitas/**
+
+/src/main/resources/static/css/output.css
+node_modules/
