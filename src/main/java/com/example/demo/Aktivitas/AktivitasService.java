@@ -27,6 +27,10 @@ public class AktivitasService {
     return aktivitasRepository.findAktivitasByUserId(userId, page);
   }
 
+  public List<Aktivitas> getAktivitasByUserId(Integer userId) {
+    return aktivitasRepository.findAktivitasByUserId(userId);
+  }
+
   public Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser) {
     return aktivitasRepository.getAktivitasById(idAktivitas, idUser);
   }

@@ -154,6 +154,32 @@ public class AktivitasController {
     return "aktivitas";
   }
 
+  @GetMapping("/member/dashboard")
+  @RequiredRole("member")
+  public String getDashboard(
+      Model model,
+      HttpSession session) {
+    Integer idUser = (Integer) session.getAttribute("idUser");
+    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser);
+
+    aktivitasList.forEach(aktivitas -> {
+      if (aktivitas.getWaktuTempuh() != null) {
+        long hours = aktivitas.getWaktuTempuh().toHours();
+        long minutes = aktivitas.getWaktuTempuh().toMinutes() % 60;
+        long seconds = aktivitas.getWaktuTempuh().getSeconds() % 60;
+        String formatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        aktivitas.setFormattedWaktuTempuh(formatted);
+        System.out.println("Formatted Waktu Tempuh: " + formatted); // Debug log
+      } else {
+        System.out.println("Waktu Tempuh is null for Aktivitas ID: " +
+            aktivitas.getIdAktivitas());
+      }
+    });
+
+    model.addAttribute("aktivitasList", aktivitasList);
+    return "member-dashboard";
+  }
+
   @GetMapping("/aktivitas/edit/{id}")
   @RequiredRole("member")
   public String getEditAktivitas(@PathVariable("id") Integer idAktivitas, Model model, HttpSession session) {

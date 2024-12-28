@@ -12,6 +12,9 @@ public interface AktivitasRepository {
 
   List<Aktivitas> findAktivitasByUserId(Integer idUser, Integer page);
 
+  // ga pake pagination (buat statistik)
+  List<Aktivitas> findAktivitasByUserId(Integer idUser);
+
   Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser);
 
   void deleteFotoByUrl(String urlFoto);
