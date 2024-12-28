@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Aktivitas Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+      .wrapper {
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Aktivitas Dashboard</h1>
+    <div>
+      <label for="viewSelector">Select View:</label>
+      <!-- Text Display for Selected Option -->
+      <button id="downloadPdfBtn">Download Chart as PDF</button>
+      <p id="selectedViewText">Currently showing: <span id="viewText">week</span></p>
+      <select id="viewSelector">
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+        <option value="all">All</option>
+      </select>
+
+      <div class="wrapper"><canvas id="aktivitasChart"></canvas></div>
+    </div>
+
+    <ul>
+      <li
+        th:each="aktivitas : ${aktivitasList}"
+        th:text="${aktivitas.judul}"
+      ></li>
+    </ul>
+
+    <!-- Pass the raw aktivitasList from Thymeleaf -->
+    <script th:inline="javascript">
+      const aktivitasList = /*[[${aktivitasList}]]*/ [];
+
+      function getWeekOfMonthFixed(date) {
+        const day = date.getDate(); // Get the day of the month
+        if (day >= 1 && day <= 7) return "Week 1";
+        if (day >= 8 && day <= 14) return "Week 2";
+        if (day >= 15 && day <= 21) return "Week 3";
+        if (day >= 22 && day <= 28) return "Week 4";
+        return "Week 5"; // Covers 29, 30, and 31
+      }
+
+      const ctx = document.getElementById("aktivitasChart").getContext("2d");
+      let aktivitasChart;
+
+      // Helper Functions
+      function getStartOfWeek(date) {
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+        return new Date(date.setDate(diff));
+      }
+
+      function getStartOfMonth(date) {
+        return new Date(date.getFullYear(), date.getMonth(), 1);
+      }
+
+      function getWeekOfMonth(date) {
+        const startOfMonth = getStartOfMonth(date);
+        const diff = date.getDate() + startOfMonth.getDay() - 1;
+        return Math.ceil(diff / 7);
+      }
+
+      function getMonthName(date) {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        return monthNames[date.getMonth()];
+      }
+
+      function getYearRange(aktivitasList) {
+        const years = aktivitasList.map((aktivitas) => new Date(aktivitas.tanggalAktivitas).getFullYear());
+        const minYear = Math.min(...years);
+        const maxYear = Math.max(...years);
+        return { minYear, maxYear };
+      }
+
+      // Week View Logic
+      function renderWeekView() {
+        const startOfWeek = getStartOfWeek(new Date());
+        const days = [...Array(7).keys()].map((i) => {
+          const date = new Date(startOfWeek);
+          date.setDate(startOfWeek.getDate() + i);
+          return date.toISOString().split("T")[0];
+        });
+
+        const dayLabels = days.map((date) => {
+          return new Date(date).toLocaleDateString("en-US", { weekday: "long" });
+        });
+
+        const durationsByDate = days.reduce((acc, date) => {
+          acc[date] = 0;
+          return acc;
+        }, {});
+
+        aktivitasList.forEach((aktivitas) => {
+          const date = aktivitas.tanggalAktivitas;
+          if (durationsByDate[date] !== undefined && aktivitas.formattedWaktuTempuh) {
+            const timeParts = aktivitas.formattedWaktuTempuh.split(":");
+            const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+            durationsByDate[date] += durationInSeconds;
+          }
+        });
+
+        const durations = days.map((date) => (durationsByDate[date] / 3600).toFixed(2));
+
+        return { labels: dayLabels, data: durations };
+      }
+      // Month View Logic
+      function renderMonthView() {
+        const today = new Date();
+        const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+
+        const durationsByWeek = weeks.reduce((acc, week) => {
+          acc[week] = 0; // Initialize total durations for each week
+          return acc;
+        }, {});
+
+        // Group aktivitas data into weeks of the current month
+        aktivitasList.forEach((aktivitas) => {
+          const date = new Date(aktivitas.tanggalAktivitas);
+          if (date.getMonth() === today.getMonth()) {
+            // Ensure it's within the current month
+            const weekLabel = getWeekOfMonthFixed(date);
+            if (durationsByWeek[weekLabel] !== undefined && aktivitas.formattedWaktuTempuh) {
+              const timeParts = aktivitas.formattedWaktuTempuh.split(":");
+              const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+              durationsByWeek[weekLabel] += durationInSeconds;
+            }
+          }
+        });
+
+        // Convert durations to hours for chart display
+        const durations = weeks.map((week) => (durationsByWeek[week] / 3600).toFixed(2));
+
+        return { labels: weeks, data: durations };
+      }
+
+      function renderYearView() {
+        const today = new Date();
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        const durationsByMonth = months.reduce((acc, month) => {
+          acc[month] = 0; // Initialize total durations for each month
+          return acc;
+        }, {});
+
+        // Group aktivitas data into months of the current year
+        aktivitasList.forEach((aktivitas) => {
+          const date = new Date(aktivitas.tanggalAktivitas);
+          if (date.getFullYear() === today.getFullYear()) {
+            // Ensure it's within the current year
+            const monthName = getMonthName(date);
+            if (durationsByMonth[monthName] !== undefined && aktivitas.formattedWaktuTempuh) {
+              const timeParts = aktivitas.formattedWaktuTempuh.split(":");
+              const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+              durationsByMonth[monthName] += durationInSeconds;
+            }
+          }
+        });
+
+        // Convert durations to hours for chart display
+        const durations = months.map((month) => (durationsByMonth[month] / 3600).toFixed(2));
+
+        return { labels: months, data: durations };
+      }
+
+      function renderAllView() {
+        const { minYear, maxYear } = getYearRange(aktivitasList);
+        const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
+
+        const durationsByYear = years.reduce((acc, year) => {
+          acc[year] = 0; // Initialize total durations for each year
+          return acc;
+        }, {});
+
+        // Group aktivitas data into years
+        aktivitasList.forEach((aktivitas) => {
+          const year = new Date(aktivitas.tanggalAktivitas).getFullYear();
+          if (durationsByYear[year] !== undefined && aktivitas.formattedWaktuTempuh) {
+            const timeParts = aktivitas.formattedWaktuTempuh.split(":");
+            const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+            durationsByYear[year] += durationInSeconds;
+          }
+        });
+
+        // Convert durations to hours for chart display
+        const durations = years.map((year) => (durationsByYear[year] / 3600).toFixed(2));
+
+        return { labels: years, data: durations };
+      }
+
+      function renderChart(view) {
+        let chartData;
+
+        if (view === "week") {
+          chartData = renderWeekView();
+        } else if (view === "month") {
+          chartData = renderMonthView();
+        } else if (view === "year") {
+          chartData = renderYearView();
+        } else if (view === "all") {
+          chartData = renderAllView();
+        }
+
+        if (aktivitasChart) {
+          aktivitasChart.destroy();
+        }
+
+        aktivitasChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                label: "Time Spent (Hours)",
+                data: chartData.data,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Time (Hours)",
+                },
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: view === "week" ? "Day of the Week" : view === "month" ? "Weeks of the Month" : view === "year" ? "Months of the Year" : "Years",
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // Initialize with Week View
+      renderChart("week");
+
+      // Handle View Toggle
+      document.getElementById("viewSelector").addEventListener("change", (event) => {
+        const selectedView = event.target.value;
+        renderChart(selectedView);
+      });
+
+      document.getElementById("downloadPdfBtn").addEventListener("click", function () {
+        html2canvas(document.getElementById("aktivitasChart"), {
+          scale: 2, // Increase resolution by scaling
+          useCORS: true, // Ensures compatibility with external resources
+        }).then(function (canvas) {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+
+          // Calculate dimensions for a sharp PDF image
+          const imgWidth = 180; // Width in mm (standard A4 PDF width is ~210mm)
+          const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+
+          const imgData = canvas.toDataURL("image/png");
+          doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+          doc.save("aktivitas_chart.pdf");
+        });
+      });
+
+      const viewSelector = document.getElementById("viewSelector");
+      const viewText = document.getElementById("viewText");
+
+      viewSelector.addEventListener("change", (event) => {
+        const selectedView = event.target.value;
+
+        // Update the displayed text
+        viewText.textContent = selectedView;
+
+        // Render the corresponding chart
+        renderChart(selectedView);
+      });
+
+      // Initialize the text display with the default value
+      viewText.textContent = viewSelector.value;
+    </script>
+  </body>
+</html>
