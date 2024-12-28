@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  textarea {
+    resize: none;
+  }
+}
+
+@layer components {
+  .input {
+    @apply border-slate-400 border-2 py-1 px-2 rounded-md;
+  }
+}
