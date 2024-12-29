@@ -3,20 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Daftar Aktivitas</title>
+    <title>Data Member</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link href="/css/output.css" rel="stylesheet" />
   </head>
   <body class="flex justify-center">
-    <div th:replace="navbar.html :: *"></div>
+    <!-- <div th:replace="navbar.html :: *"></div> -->
     <div class="w-2/3 pt-20">
       <header class="justify-between w-full flex">
-        <h1 class="text-4xl font-semibold">Daftar Aktivitas</h1>
-        <a
-          class="text-base font-semibold text-white bg-orange-500 px-3 py-2 hover:bg-orange-300"
-          href="/aktivitas/tambah"
-          >+ Tambah Aktivitas Baru</a
-        >
+        <h1 class="text-4xl font-semibold">Data Member</h1>
       </header>
       <main class="pt-5">
         <section>
@@ -24,54 +19,32 @@
             <thead class="text-base uppercase bg-gray-100">
               <tr class="border-b-gray-200 border-b-2">
                 <th class="py-4">No</th>
-                <th>Tanggal Aktivitas</th>
-                <th>Judul</th>
-                <th>Waktu Tempuh</th>
-                <th>Jarak Tempuh</th>
-                <th>Satuan Jarak</th>
-                <th></th>
-                <th></th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody class="text-center">
               <tr
-                th:each="aktivitas, iterStat : ${aktivitasList}"
+                th:each="member, iterStat : ${memberList}"
                 class="even:bg-gray-100"
               >
                 <td
                   th:text="${(currentPage - 1) * 10 + iterStat.index + 1}"
                   class="py-4"
                 ></td>
-
-                <td th:text="${aktivitas.tanggalAktivitas}"></td>
+                <td th:text="${member.namaUser}"></td>
+                <td th:text="${member.email}"></td>
                 <td>
                   <a
-                    th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
-                    th:text="${aktivitas.judul}"
-                    class="text-blue-500 hover:text-blue-300"
-                  ></a>
-                </td>
-                <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
-                <td th:text="${aktivitas.jarakTempuh}"></td>
-                <td th:text="${aktivitas.satuanJarak}"></td>
-                <td>
-                  <a
-                    th:href="@{/aktivitas/edit/{id}(id=${aktivitas.idAktivitas})}"
+                    th:href="@{/admin/member/edit/{id}(id=${member.idUser})}"
                     class="btn btn-primary text-blue-500 hover:text-blue-300"
                     >Edit</a
                   >
                 </td>
-                <td>
-                  <a
-                    th:href="@{/aktivitas/hapus/{id}(id=${aktivitas.idAktivitas})}"
-                    onclick="return confirm('Apakah Anda yakin ingin menghapus aktivitas ini?');"
-                    class="btn btn-danger text-red-500 hover:text-red-300"
-                    >Hapus</a
-                  >
-                </td>
               </tr>
-              <tr th:if="${aktivitasList.isEmpty()}">
-                <td colspan="8">Tidak ada aktivitas.</td>
+              <tr th:if="${memberList.isEmpty()}">
+                <td colspan="4">Tidak ada member.</td>
               </tr>
             </tbody>
           </table>
@@ -80,33 +53,28 @@
         <!-- Pagination start -->
         <nav th:if="${pageCount > 1}">
           <ul class="pagination-container flex text-lg">
-            <!-- Previous Button -->
             <li class="prev-btn">
               <a
-                th:href="@{/aktivitas(page=${currentPage} - 1)}"
+                th:href="@{/admin/data-member(page=${currentPage} - 1)}"
                 aria-label="Previous"
                 th:class="${currentPage}==1 ? 'disabled' : null"
               >
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
-
-            <!-- Page Numbers -->
             <li
               th:each="i : ${#numbers.sequence(1, pageCount)}"
               class="pagination-link"
             >
               <a
-                th:href="@{/aktivitas(page=${i})}"
+                th:href="@{/admin/data-member(page=${i})}"
                 th:text="${i}"
                 th:class="${currentPage}==${i} ? 'disabled' : null"
               ></a>
             </li>
-
-            <!-- Next Button -->
             <li class="next-btn">
               <a
-                th:href="@{/aktivitas(page=${currentPage} + 1)}"
+                th:href="@{/admin/data-member(page=${currentPage} + 1)}"
                 aria-label="Next"
                 th:class="${currentPage}==${pageCount} ? 'disabled' : null"
               >
