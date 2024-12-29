@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Edit Aktivitas</title>
+    <link href="/css/output.css" rel="stylesheet" />
     <!-- <script>
       function previewImage(event) {
         const output = document.getElementById("newImagePreview");
@@ -10,78 +11,247 @@
       }
     </script> -->
   </head>
-  <body>
-    <h1>Edit Aktivitas</h1>
-    <form
-      th:action="@{/aktivitas/edit}"
-      th:object="${aktivitas}"
-      method="post"
-      enctype="multipart/form-data"
-    >
-      <input type="hidden" th:field="*{idAktivitas}" />
+  <body class="flex justify-center">
+    <div class="w-2/3 pt-20">
+      <header class="pb-5">
+        <h1 class="text-4xl font-semibold">Edit Aktivitas</h1>
+      </header>
+      <form
+        th:action="@{/aktivitas/edit}"
+        th:object="${aktivitas}"
+        method="post"
+        enctype="multipart/form-data"
+        class="pt-5"
+      >
+        <!-- Start of Section -->
+        <section>
+          <input type="hidden" th:field="*{idAktivitas}" />
+          <input type="hidden" th:field="*{satuanJarak}" />
+          <!-- <div class="w-full">
+            <div class="flex w-full justify-between items-center">
+              <div>
+                <label for="judul" class="text-2xl font-semibold"
+                  >Judul Aktivitas:</label
+                >
+                <input
+                  type="text"
+                  id="judul"
+                  th:field="*{judul}"
+                  class="input text-xl font-semibold"
+                />
+              </div>
+              <p class="mt-5">
+                <span
+                  th:text="${aktivitas.tanggalAktivitas}"
+                  class="text-xl"
+                ></span>
+              </p>
+            </div>
+            <p class="flex items-center">
+              <label for="deskripsi" class="text-2xl font-semibold"
+                >Deskripsi:</label
+              >
+              <textarea
+                id="deskripsi"
+                th:field="*{deskripsi}"
+                class="text-lg"
+              ></textarea>
+            </p>
+          </div> -->
+          <div class="w-full flex justify-between">
+            <!-- Judul Aktivitas -->
+            <div class="w-2/3 mr-4">
+              <label for="judul" class="block text-2xl font-semibold mb-2"
+                >Judul Aktivitas:</label
+              >
+              <input
+                type="text"
+                id="judul"
+                th:field="*{judul}"
+                class="w-full text-lg font-normal border border-gray-300 rounded-md px-2 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            <!-- Tanggal Aktivitas -->
+            <div class="mt-8 text-xl text-gray-700">
+              <span th:text="${aktivitas.tanggalAktivitas}"></span>
+            </div>
+          </div>
 
-      <input type="hidden" th:field="*{satuanJarak}" />
-
-      <label for="tanggal">Tanggal</label>
-      <p id="tanggal" th:text="*{tanggalAktivitas}"></p>
-
-      <label for="waktu">Waktu</label>
-      <p id="waktu" th:text="*{formattedWaktuTempuh}"></p>
-
-      <label for="judul">Judul</label>
-      <input type="text" id="judul" th:field="*{judul}" />
-
-      <label for="deskripsi">Deskripsi</label>
-      <textarea id="deskripsi" th:field="*{deskripsi}"></textarea>
-
-      <!-- Foto Lama -->
-      <label>Foto Lama:</label>
-      <div id="photoContainer">
-        <div
-          th:each="foto : ${aktivitas.urlFoto}"
-          th:attr="data-photo-url=${foto}"
-        >
-          <div style="display: flex; align-items: center; margin-bottom: 10px">
-            <img
-              th:src="@{'/uploads/aktivitas/' + ${foto}}"
-              style="max-width: 100px; max-height: 100px; margin-right: 10px"
-            />
-            <button
-              type="button"
-              th:attr="onclick=|deletePhoto('${foto}', event)|"
-              style="
-                background-color: red;
-                color: white;
-                border: none;
-                cursor: pointer;
-                padding: 5px 10px;
-              "
+          <!-- Deskripsi -->
+          <div class="mt-5 w-2/3">
+            <label for="deskripsi" class="block text-2xl font-semibold mb-2"
+              >Deskripsi:</label
             >
-              Delete
-            </button>
+            <textarea
+              id="deskripsi"
+              th:field="*{deskripsi}"
+              class="w-full text-lg font-normal border border-gray-300 rounded-md px-2 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              rows="4"
+            ></textarea>
+          </div>
+
+          <h3 class="text-2xl pt-10 font-semibold pb-5 text-orange-500">
+            Foto Aktivitas
+          </h3>
+          <!-- Tambahkan Foto Baru -->
+          <!-- Tambahkan Foto Baru -->
+          <!-- <label for="foto" class="text-xl font-semibold"
+            >Tambah Foto Baru:</label
+          > -->
+          <!-- <button
+            type="button"
+            onclick="document.getElementById('foto').click()"
+            class="text-base font-semibold text-white bg-orange-500 px-3 py-2 hover:bg-orange-300 rounded-md w-fit"
+          >
+            + Tambah Foto Baru
+          </button> -->
+          <button
+            type="button"
+            onclick="document.getElementById('foto').click()"
+            class="text-lg font-semibold"
+          >
+            + Tambah Foto Baru
+          </button>
+          <input
+            type="file"
+            id="foto"
+            name="foto"
+            accept="image/*"
+            multiple
+            onchange="autoUploadPhotos()"
+            class="hidden"
+          />
+
+          <!-- <button
+            type="button"
+            onclick="uploadNewPhotos()"
+            class="text-base font-semibold text-white bg-orange-500 px-3 py-2 hover:bg-orange-300 rounded-md w-fit"
+          >
+            + Tambah Foto
+          </button> -->
+        </section>
+        <div class="grid grid-cols-3 gap-8">
+          <div th:if="${aktivitas.urlFoto.isEmpty()}">
+            <p class="text-lg">Tidak ada foto.</p>
+          </div>
+          <div th:if="${!aktivitas.urlFoto.isEmpty()}" class="col-span-2">
+            <div
+              id="photoContainer"
+              class="flex flex-wrap gap-6 border-2 p-6 rounded-lg"
+            >
+              <div
+                th:each="foto : ${aktivitas.urlFoto}"
+                th:attr="data-photo-url=${foto}"
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 10px;
+                  "
+                  class="flex-col"
+                >
+                  <img
+                    th:src="@{'/uploads/aktivitas/' + ${foto}}"
+                    class="aspect-square max-w-[300px] max-h-[300px] mr-3"
+                  />
+                  <button
+                    type="button"
+                    th:attr="onclick=|deletePhoto('${foto}', event)|"
+                    style="
+                      background-color: red;
+                      color: white;
+                      border: none;
+                      cursor: pointer;
+                      padding: 5px 10px;
+                      :hover {
+                        background-color: orangered;
+                      }
+                    "
+                    class="mt-2 rounded-md"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flex flex-col shadow-md rounded-md p-6 w-full h-fit">
+              <p>
+                <span
+                  th:text="${aktivitas.formattedWaktuTempuh}"
+                  class="text-3xl"
+                ></span>
+                <br />
+                <strong class="text-lg font-semibold mt-2 text-orange-500"
+                  >Waktu Tempuh</strong
+                >
+              </p>
+              <p class="mt-5">
+                <span
+                  th:text="${aktivitas.jarakTempuh}"
+                  class="text-3xl"
+                ></span>
+                <span
+                  th:text="${aktivitas.satuanJarak}"
+                  class="text-3xl"
+                ></span>
+                <br />
+                <strong class="text-lg font-semibold mt-2 text-orange-500"
+                  >Jarak Tempuh</strong
+                >
+              </p>
+            </div>
+            <div class="w-full flex justify-center mt-5">
+              <button
+                type="submit"
+                class="text-base font-semibold text-white bg-orange-500 px-3 py-2 hover:bg-orange-300 rounded-md w-fit"
+              >
+                Simpan
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Tambahkan Foto Baru -->
-      <label for="foto">Tambah Foto Baru:</label>
-      <input type="file" id="foto" name="foto" accept="image/*" multiple />
-      <button
-        type="button"
-        onclick="uploadNewPhotos()"
-        style="
-          background-color: green;
-          color: white;
-          border: none;
-          cursor: pointer;
-          padding: 5px 10px;
-        "
-      >
-        Simpan Foto
-      </button>
+        <!-- Foto Lama
+          <label>Foto Lama:</label>
+          <div id="photoContainer">
+            <div
+              th:each="foto : ${aktivitas.urlFoto}"
+              th:attr="data-photo-url=${foto}"
+            >
+              <div
+                style="display: flex; align-items: center; margin-bottom: 10px"
+              >
+                <img
+                  th:src="@{'/uploads/aktivitas/' + ${foto}}"
+                  style="
+                    max-width: 100px;
+                    max-height: 100px;
+                    margin-right: 10px;
+                  "
+                />
+                <button
+                  type="button"
+                  th:attr="onclick=|deletePhoto('${foto}', event)|"
+                  style="
+                    background-color: red;
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                    padding: 5px 10px;
+                  "
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div> -->
 
-      <button type="submit">Simpan</button>
-    </form>
+        <!-- End of Section -->
+      </form>
+    </div>
 
     <script>
       function deletePhoto(photoUrl, event) {
@@ -123,6 +293,77 @@
         } else {
           console.log("Penghapusan foto dibatalkan.");
         }
+      }
+
+      function autoUploadPhotos() {
+        const formData = new FormData();
+        const files = document.getElementById("foto").files;
+
+        // Cari elemen ID Aktivitas
+        const idAktivitasInput = document.querySelector(
+          'input[name="idAktivitas"]'
+        );
+        if (!idAktivitasInput) {
+          console.error("Input untuk 'idAktivitas' tidak ditemukan.");
+          alert("Terjadi kesalahan, ID Aktivitas tidak ditemukan.");
+          return;
+        }
+
+        const idAktivitas = idAktivitasInput.value;
+
+        // Tambahkan file dan ID Aktivitas ke FormData
+        for (let file of files) {
+          formData.append("foto", file);
+        }
+        formData.append("idAktivitas", idAktivitas);
+
+        // Kirim permintaan ke backend
+        fetch(`/aktivitas/upload-foto`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Gagal mengunggah foto");
+            }
+            return response.json();
+          })
+          .then((urls) => {
+            // Tambahkan foto baru ke halaman
+            const photoContainer = document.getElementById("photoContainer");
+
+            urls.forEach((url) => {
+              const newPhotoElement = document.createElement("div");
+              newPhotoElement.setAttribute("data-photo-url", url);
+              newPhotoElement.style.display = "flex";
+              newPhotoElement.style.alignItems = "center";
+              newPhotoElement.style.marginBottom = "10px";
+
+              // Tambahkan timestamp unik ke URL untuk menghindari cache
+              const timestamp = new Date().getTime();
+
+              newPhotoElement.innerHTML = `
+          <div class="flex flex-col items-center">
+            <img
+              src="/uploads/aktivitas/${url}?t=${timestamp}"
+              class="max-w-[300px] max-h-[300px]"
+              alt="Foto Baru"
+            />
+            <button
+              style="background-color: red; color: white; border: none; cursor: pointer; padding: 5px 10px; margin-top: 10px;"
+              onclick="deletePhoto('${url}', event)">Delete</button>
+          </div>
+        `;
+              photoContainer.appendChild(newPhotoElement);
+            });
+
+            // Tambahkan alert untuk menunjukkan bahwa foto berhasil ditambahkan
+            alert("Foto berhasil ditambah!");
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Terjadi kesalahan saat mengunggah foto!");
+          });
       }
 
       function uploadNewPhotos() {

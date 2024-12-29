@@ -125,11 +125,12 @@ public class AktivitasController {
 
   @GetMapping("/aktivitas")
   @RequiredRole("member")
-  public String getAktivitas(@RequestParam(name = "page", required = false, defaultValue = "1") String page,
+  public String getAktivitas(
+      @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage, // Ubah ke int
       Model model,
       HttpSession session) {
     Integer idUser = (Integer) session.getAttribute("idUser");
-    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser, Integer.parseInt(page));
+    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser, currentPage);
 
     aktivitasList.forEach(aktivitas -> {
       if (aktivitas.getWaktuTempuh() != null) {
@@ -144,11 +145,11 @@ public class AktivitasController {
       }
     });
 
-    // pagination
+    // Pagination
     int rowCount = aktivitasService.getAktivitasCount(idUser);
     int pageCount = (int) Math.ceil((double) rowCount / 10);
     model.addAttribute("pageCount", pageCount);
-    model.addAttribute("currentPage", page);
+    model.addAttribute("currentPage", currentPage); // Tetap tambahkan currentPage sebagai model
 
     model.addAttribute("aktivitasList", aktivitasList);
     return "aktivitas";
