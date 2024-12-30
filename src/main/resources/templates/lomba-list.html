@@ -2,23 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daftar Lomba</title>
-    <link
-      rel="stylesheet"
-      href="/css/output.css"
-    />
+    <link rel="stylesheet" href="/css/output.css" />
   </head>
   <body class="flex justify-center">
-    <div class="w-2/3 pt-20">
+    <div class="w-2/3 pt-28">
       <header class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-semibold">Daftar Lomba</h1>
-        <a
-          href="/admin/lomba/tambah"
-          class="primary-btn"
+        <a href="/admin/lomba/tambah" class="primary-btn"
           >+ Tambah Lomba Baru</a
         >
       </header>
@@ -65,10 +57,7 @@
         </section>
 
         <!-- Pagination start -->
-        <nav
-          th:if="${pageCount > 1}"
-          class="mt-2 flex justify-end"
-        >
+        <nav th:if="${pageCount > 1}" class="mt-2 flex justify-end">
           <ul class="pagination-container flex text-lg">
             <!-- Previous Button -->
             <li class="prev-btn">
