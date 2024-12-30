@@ -2,36 +2,92 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Leaderboard</title>
+
+    <link
+      rel="stylesheet"
+      href="/css/output.css"
+    />
   </head>
-  <body>
-    <header>
-      <h1>Leaderboard</h1>
-    </header>
-    <main>
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Nama Member</th>
-            <th>Jarak Tempuh</th>
-            <th>Waktu Tempuh</th>
-            <th>Avg Pace</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="entry, iterStat : ${leaderboard}">
-            <td th:text="${iterStat.index + 1}"></td>
-            <td th:text="${entry.namaUser}"></td>
-            <td th:text="${entry.jarakTempuh}"></td>
-            <td th:text="${entry.formattedWaktuTempuh}"></td>
-            <!-- <td th:text="${entry.skor}"></td> -->
-            <td th:text="${entry.formattedAvgPace} + ' /km'"></td>
-          </tr>
-          <tr th:if="${leaderboard.isEmpty()}">
-            <td colspan="5">Belum ada aktivitas pada lomba ini.</td>
-          </tr>
-        </tbody>
-      </table>
-    </main>
+  <body class="flex justify-center">
+    <div class="w-2/3">
+      <header class="mb-6">
+        <h1 class="text-4xl font-semibold">Leaderboard</h1>
+      </header>
+      <main>
+        <table class="table-auto w-full text-base">
+          <thead class="text-base uppercase bg-gray-100">
+            <tr>
+              <th>Rank</th>
+              <th>Nama Member</th>
+              <th>Jarak Tempuh</th>
+              <th>Waktu Tempuh</th>
+              <th>Avg Pace</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            <tr
+              th:each="entry, iterStat : ${leaderboard}"
+              class="even:bg-gray-100"
+            >
+              <td
+                th:text="${iterStat.index + 1}"
+                class="py-4"
+              ></td>
+              <td th:text="${entry.namaUser}"></td>
+              <td th:text="${entry.jarakTempuh + ' ' + entry.satuanJarak}"></td>
+
+              <td th:text="${entry.formattedWaktuTempuh}"></td>
+              <!-- <td th:text="${entry.skor}"></td> -->
+              <td th:text="${entry.formattedAvgPace} + ' /km'"></td>
+            </tr>
+            <tr th:if="${leaderboard.isEmpty()}">
+              <td colspan="5">Belum ada aktivitas pada lomba ini.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination start -->
+        <nav
+          th:if="${pageCount > 1}"
+          class="flex justify-end"
+        >
+          <ul class="pagination-container flex text-lg">
+            <!-- Previous Button -->
+            <li class="prev-btn">
+              <a
+                th:href="@{/member/lomba/leaderboard(page=${currentPage} - 1)}"
+                aria-label="Previous"
+                th:class="${currentPage}==1 ? 'disabled' : null"
+              >
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+
+            <!-- Page Numbers -->
+            <li
+              th:each="i : ${#numbers.sequence(1, pageCount)}"
+              class="pagination-link"
+            >
+              <a
+                th:href="@{/member/lomba/leaderboard(page=${i})}"
+                th:text="${i}"
+                th:class="${currentPage}==${i} ? 'disabled' : null"
+              ></a>
+            </li>
+
+            <!-- Next Button -->
+            <li class="next-btn">
+              <a
+                th:href="@{/member/lomba/leaderboard(page=${currentPage} + 1)}"
+                aria-label="Next"
+                th:class="${currentPage}==${pageCount} ? 'disabled' : null"
+              >
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </main>
+    </div>
   </body>
 </html>

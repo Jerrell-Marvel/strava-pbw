@@ -89,8 +89,8 @@ public class JdbcLombaRepository implements LombaRepository {
         rs.getString("nama_user"),
         rs.getDouble("jarak_tempuh"), // Jarak tempuh asli
         rs.getTime("waktu_tempuh").toLocalTime(), // Waktu tempuh asli
-        rs.getDouble("avg_pace") // Avg pace dalam detik per kilometer
-    ), idLomba, offset);
+        rs.getDouble("avg_pace"), // Avg pace dalam detik per kilometer
+        rs.getString("satuan_jarak")), idLomba, offset);
   }
 
   @Override

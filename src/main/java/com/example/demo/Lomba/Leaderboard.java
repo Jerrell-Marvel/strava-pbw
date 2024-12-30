@@ -16,6 +16,7 @@ public class Leaderboard {
   private Double jarakTempuh;
   private LocalTime waktuTempuh;
   private Double skor;
+  private String satuanJarak;
 
   public String getFormattedWaktuTempuh() {
     return waktuTempuh != null ? waktuTempuh.format(DateTimeFormatter.ofPattern("HH:mm:ss")) : null;
