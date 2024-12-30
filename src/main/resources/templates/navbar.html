@@ -1,20 +1,24 @@
 <nav
-  class="border-b-2 shadow-sm border-gray-200 p-4 fixed w-full"
+  class="border-b-2 shadow-sm border-gray-200 p-4 fixed w-full bg-white z-50"
   th:fragment="*"
 >
   <div class="container mx-auto flex justify-between items-center">
     <!-- Logo -->
-    <a href="/" class="text-lg font-bold text-orange-500">Stravibe</a>
+    <a href="/" class="text-2xl font-bold text-orange-500">Stravibe</a>
 
     <!-- Navbar Menu -->
     <div class="flex space-x-8">
       <!-- Navbar Before Login -->
       <ul id="nav-before-login" class="hidden flex space-x-4">
         <li>
-          <a href="/register" class="hover:text-gray-400">Register</a>
+          <a
+            href="/register"
+            class="text-orange-500 px-3 py-2 hover:text-orange-300 rounded-md border-2 border-orange-500"
+            >Register</a
+          >
         </li>
         <li>
-          <a href="/login" class="hover:text-gray-400">Login</a>
+          <a href="/login" class="primary-btn px-5">Login</a>
         </li>
       </ul>
 
@@ -26,7 +30,14 @@
             id="btn-aktivitas"
             class="hover:text-gray-400 focus:outline-none"
           >
-            Aktivitas
+            <span>Aktivitas</span>
+            <img
+              src="/assets/down-arrow.png"
+              alt=""
+              width="30"
+              height="30"
+              class="inline"
+            />
           </button>
           <div
             id="dropdown-aktivitas"
@@ -44,7 +55,14 @@
         </li>
         <li id="member-menu" class="hidden relative">
           <button id="btn-lomba" class="hover:text-gray-400 focus:outline-none">
-            Lomba
+            <span>Lomba</span>
+            <img
+              src="/assets/down-arrow.png"
+              alt=""
+              width="30"
+              height="30"
+              class="inline"
+            />
           </button>
           <div
             id="dropdown-lomba"
@@ -62,9 +80,20 @@
             >
           </div>
         </li>
-        <li>
-          <a href="/member/dashboard" class="hover:text-gray-400">Dashboard</a>
-        </li>
+
+        <a
+          id="member-menu"
+          href="/member/dashboard"
+          class="px-4 py-2 hover:bg-gray-100 hidden relative"
+          >Dashboard</a
+        >
+
+        <a
+          id="admin-menu"
+          href="/admin/data-member"
+          class="px-4 py-2 hover:bg-gray-100 hidden relative"
+          >Kelola Data Member</a
+        >
 
         <!-- Admin Menu -->
         <li id="admin-menu" class="hidden relative">
@@ -72,7 +101,14 @@
             id="btn-admin-lomba"
             class="hover:text-gray-400 focus:outline-none"
           >
-            Lomba
+            <span>Lomba</span>
+            <img
+              src="/assets/down-arrow.png"
+              alt=""
+              width="30"
+              height="30"
+              class="inline"
+            />
           </button>
           <div
             id="dropdown-admin-lomba"
@@ -98,14 +134,18 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       // Simulasi login dan role
-      const isLoggedIn = true; // Ubah ke true jika user sudah login
+      let isLoggedIn = true; // Ubah ke true jika user sudah login
       const userRole = "member"; // 'member' atau 'admin'
+
+      if (!userRole) {
+        isLoggedIn = false;
+      }
 
       // Ambil elemen
       const navBeforeLogin = document.getElementById("nav-before-login");
       const navAfterLogin = document.getElementById("nav-after-login");
-      const memberMenu = document.getElementById("member-menu");
-      const adminMenu = document.getElementById("admin-menu");
+      const memberMenuItems = document.querySelectorAll("#member-menu");
+      const adminMenuItems = document.querySelectorAll("#admin-menu");
 
       // Set visibilitas navbar
       if (isLoggedIn) {
@@ -113,11 +153,11 @@
         navAfterLogin.classList.remove("hidden");
 
         if (userRole === "member") {
-          memberMenu.classList.remove("hidden");
-          adminMenu.classList.add("hidden");
+          memberMenuItems.forEach((item) => item.classList.remove("hidden"));
+          adminMenuItems.forEach((item) => item.classList.add("hidden"));
         } else if (userRole === "admin") {
-          adminMenu.classList.remove("hidden");
-          memberMenu.classList.add("hidden");
+          adminMenuItems.forEach((item) => item.classList.remove("hidden"));
+          memberMenuItems.forEach((item) => item.classList.add("hidden"));
         }
       } else {
         navBeforeLogin.classList.remove("hidden");
