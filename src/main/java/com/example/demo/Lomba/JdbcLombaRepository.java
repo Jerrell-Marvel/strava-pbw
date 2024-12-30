@@ -67,7 +67,7 @@ public class JdbcLombaRepository implements LombaRepository {
   // ), idLomba);
   // }
 
-  public List<Leaderboard> findLeaderboardByLombaId(Integer idLomba) {
+  public List<Leaderboard> findLeaderboardByLombaId(Integer idLomba, int offset) {
     String sql = """
             SELECT lm.id_user, u.nama_user, a.jarak_tempuh, a.waktu_tempuh, a.satuan_jarak,
                    (EXTRACT(EPOCH FROM a.waktu_tempuh) /
@@ -81,7 +81,7 @@ public class JdbcLombaRepository implements LombaRepository {
             JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
             JOIN Users u ON lm.id_user = u.id_user
             WHERE lm.id_lomba = ?
-            ORDER BY avg_pace ASC -- Lower pace (faster) is better
+            ORDER BY avg_pace ASC LIMIT 10 OFFSET ?
         """;
 
     return jdbcTemplate.query(sql, (rs, rowNum) -> new Leaderboard(
@@ -89,8 +89,21 @@ public class JdbcLombaRepository implements LombaRepository {
         rs.getString("nama_user"),
         rs.getDouble("jarak_tempuh"), // Jarak tempuh asli
         rs.getTime("waktu_tempuh").toLocalTime(), // Waktu tempuh asli
-        rs.getDouble("avg_pace") // Avg pace dalam detik per kilometer
-    ), idLomba);
+        rs.getDouble("avg_pace"), // Avg pace dalam detik per kilometer
+        rs.getString("satuan_jarak")), idLomba, offset);
+  }
+
+  @Override
+  public int getLeaderboardCountByLombaId(Integer idLomba) {
+    String sql = """
+            SELECT COUNT(*)
+            FROM Lomba_Member lm
+            JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
+            JOIN Users u ON lm.id_user = u.id_user
+            WHERE lm.id_lomba = ?
+        """;
+
+    return jdbcTemplate.queryForObject(sql, Integer.class, idLomba);
   }
 
   public void insertLomba(Lomba lomba) {
@@ -134,14 +147,14 @@ public class JdbcLombaRepository implements LombaRepository {
     jdbcTemplate.update(sql, idLomba, idUser, idAktivitas);
   }
 
-  public List<LombaMember> findLombaDiikutiByUser(Integer idUser) {
+  public List<LombaMember> findLombaDiikutiByUser(Integer idUser, int offset) {
     String sql = """
             SELECT l.id_lomba, l.nama_lomba, l.deskripsi_lomba,
                    lm.id_aktivitas, a.judul, l.tanggal_mulai, l.tanggal_selesai
             FROM Lomba l
             JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba
             JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
-            WHERE lm.id_user = ?
+            WHERE lm.id_user = ? LIMIT 10 OFFSET ?
         """;
     return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaMember(
         rs.getInt("id_lomba"),
@@ -150,18 +163,28 @@ public class JdbcLombaRepository implements LombaRepository {
         rs.getInt("id_aktivitas"),
         rs.getString("judul"),
         rs.getDate("tanggal_mulai").toLocalDate(),
-        rs.getDate("tanggal_selesai").toLocalDate()), idUser);
+        rs.getDate("tanggal_selesai").toLocalDate()), idUser, offset);
+  }
+
+  @Override
+  public int countLombaDiikutiByUser(Integer idUser) {
+    String sql = """
+            SELECT COUNT(*) FROM Lomba l JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas WHERE lm.id_user = ?
+        """;
+
+    return jdbcTemplate.queryForObject(sql, Integer.class, idUser);
   }
 
   public List<LombaBerlangsung> findLombaBerlangsungWithStatus(Integer idUser, int offset, int pageSize) {
     String sql = """
-            SELECT l.id_lomba, l.nama_lomba, l.deskripsi_lomba, l.tanggal_mulai, l.tanggal_selesai,
-                   CASE WHEN lm.id_user IS NOT NULL THEN TRUE ELSE FALSE END AS status_mengikuti
-            FROM Lomba l
-            LEFT JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba AND lm.id_user = ?
-            WHERE CURRENT_DATE BETWEEN l.tanggal_mulai AND l.tanggal_selesai
-            LIMIT ? OFFSET ?
-        """;
+                    SELECT l.id_lomba, l.nama_lomba, l.deskripsi_lomba, l.tanggal_mulai, l.tanggal_selesai,
+               CASE WHEN lm.id_user IS NOT NULL THEN TRUE ELSE FALSE END AS status_mengikuti
+        FROM Lomba l
+        LEFT JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba AND lm.id_user = ?
+        WHERE CURRENT_DATE BETWEEN l.tanggal_mulai AND l.tanggal_selesai
+        ORDER BY l.tanggal_mulai DESC, status_mengikuti DESC, l.id_lomba DESC
+        LIMIT ? OFFSET ?;
+                """;
     return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaBerlangsung(
         rs.getInt("id_lomba"),
         rs.getString("nama_lomba"),

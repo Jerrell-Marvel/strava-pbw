@@ -41,8 +41,15 @@ public class LombaController {
   }
 
   @GetMapping("/lomba/{id}/leaderboard")
-  public String getLeaderboard(@PathVariable("id") Integer idLomba, Model model) {
-    List<Leaderboard> leaderboard = lombaService.getLeaderboardByLombaId(idLomba);
+  public String getLeaderboard(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+      @PathVariable("id") Integer idLomba, Model model) {
+    List<Leaderboard> leaderboard = lombaService.getLeaderboardByLombaId(idLomba, page);
+
+    int totalLeaderboard = lombaService.getLeaderboardByLombaIdCount(idLomba);
+    int pageCount = (int) Math.ceil((double) totalLeaderboard / 10);
+
+    model.addAttribute("currentPage", page);
+    model.addAttribute("pageCount", pageCount);
 
     model.addAttribute("leaderboard", leaderboard);
     return "lomba-leaderboard";
@@ -111,10 +118,19 @@ public class LombaController {
 
   @GetMapping("/member/lomba/diikuti")
   @RequiredRole("member")
-  public String lombaDiikuti(Model model, HttpSession session) {
+  public String lombaDiikuti(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+      Model model, HttpSession session) {
     Integer idUser = (Integer) session.getAttribute("idUser");
-    List<LombaMember> lombaDiikuti = lombaService.getLombaDiikuti(idUser);
+    List<LombaMember> lombaDiikuti = lombaService.getLombaDiikuti(idUser, page);
     model.addAttribute("lombaDiikuti", lombaDiikuti);
+
+    int totalLomba = lombaService.getLombaDiikutiCount(idUser);
+    int pageCount = (int) Math.ceil((double) totalLomba / 10);
+
+    model.addAttribute("currentPage", page);
+    model.addAttribute("pageCount", pageCount);
+
+    System.out.println("lorem " + pageCount);
     return "lomba-diikuti";
   }
 

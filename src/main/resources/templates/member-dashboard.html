@@ -9,35 +9,44 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <style>
-      .wrapper {
-        width: 50%;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="/css/output.css"
+    />
   </head>
-  <body>
-    <h1>Aktivitas Dashboard</h1>
-    <div>
-      <label for="viewSelector">Select View:</label>
-      <!-- Text Display for Selected Option -->
-      <button id="downloadPdfBtn">Download Chart as PDF</button>
-      <p id="selectedViewText">Currently showing: <span id="viewText">week</span></p>
-      <select id="viewSelector">
-        <option value="week">Week</option>
-        <option value="month">Month</option>
-        <option value="year">Year</option>
-        <option value="all">All</option>
-      </select>
+  <body class="flex justify-center">
+    <div class="w-2/3 pt-20">
+      <header>
+        <h1 class="text-4xl font-semibold">Aktivitas Dashboard</h1>
+      </header>
 
-      <div class="wrapper"><canvas id="aktivitasChart"></canvas></div>
+      <div class="flex justify-between my-6">
+        <!-- Text Display for Selected Option -->
+
+        <div>
+          <label for="viewSelector">Select View:</label>
+          <!-- <p id="selectedViewText">Currently showing: <span id="viewText">week</span></p> -->
+          <select
+            id="viewSelector"
+            class="input"
+          >
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+
+        <button
+          id="downloadPdfBtn"
+          class="primary-btn"
+        >
+          Download Chart as PDF
+        </button>
+      </div>
+
+      <canvas id="aktivitasChart"></canvas>
     </div>
-
-    <ul>
-      <li
-        th:each="aktivitas : ${aktivitasList}"
-        th:text="${aktivitas.judul}"
-      ></li>
-    </ul>
 
     <!-- Pass the raw aktivitasList from Thymeleaf -->
     <script th:inline="javascript">
@@ -224,8 +233,10 @@
               {
                 label: "Time Spent (Hours)",
                 data: chartData.data,
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderColor: "rgba(75, 192, 192, 1)",
+                backgroundColor: "rgba(249, 115, 22, 0.2)",
+                borderColor: "rgba(249, 115, 22, 1)",
+                // backgroundColor: "rgba(75, 192, 192, 0.2)",
+                // borderColor: "rgba(75, 192, 192, 1)",
                 borderWidth: 1,
               },
             ],
@@ -277,21 +288,21 @@
         });
       });
 
-      const viewSelector = document.getElementById("viewSelector");
-      const viewText = document.getElementById("viewText");
+      // const viewSelector = document.getElementById("viewSelector");
+      // const viewText = document.getElementById("viewText");
 
-      viewSelector.addEventListener("change", (event) => {
-        const selectedView = event.target.value;
+      // viewSelector.addEventListener("change", (event) => {
+      //   const selectedView = event.target.value;
 
-        // Update the displayed text
-        viewText.textContent = selectedView;
+      //   // Update the displayed text
+      //   viewText.textContent = selectedView;
 
-        // Render the corresponding chart
-        renderChart(selectedView);
-      });
+      //   // Render the corresponding chart
+      //   renderChart(selectedView);
+      // });
 
-      // Initialize the text display with the default value
-      viewText.textContent = viewSelector.value;
+      // // Initialize the text display with the default value
+      // viewText.textContent = viewSelector.value;
     </script>
   </body>
 </html>
