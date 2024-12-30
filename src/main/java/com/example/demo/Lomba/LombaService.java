@@ -26,8 +26,13 @@ public class LombaService {
     return lombaRepository.getLombaCount();
   }
 
-  public List<Leaderboard> getLeaderboardByLombaId(Integer idLomba) {
-    return lombaRepository.findLeaderboardByLombaId(idLomba);
+  public List<Leaderboard> getLeaderboardByLombaId(Integer idLomba, int page) {
+    int offset = (page - 1) * 10;
+    return lombaRepository.findLeaderboardByLombaId(idLomba, offset);
+  }
+
+  public int getLeaderboardByLombaIdCount(Integer idLomba) {
+    return lombaRepository.getLeaderboardCountByLombaId(idLomba);
   }
 
   public void addLomba(Lomba lomba) {
@@ -51,8 +56,13 @@ public class LombaService {
     lombaRepository.insertLombaMember(idLomba, idUser, idAktivitas);
   }
 
-  public List<LombaMember> getLombaDiikuti(Integer idUser) {
-    return lombaRepository.findLombaDiikutiByUser(idUser);
+  public List<LombaMember> getLombaDiikuti(Integer idUser, int page) {
+    int offset = (page - 1) * 10;
+    return lombaRepository.findLombaDiikutiByUser(idUser, offset);
+  }
+
+  public int getLombaDiikutiCount(Integer idUser) {
+    return lombaRepository.countLombaDiikutiByUser(idUser);
   }
 
   public List<LombaBerlangsung> getLombaBerlangsungWithStatus(Integer idUser, int page, int pageSize) {

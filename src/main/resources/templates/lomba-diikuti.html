@@ -2,48 +2,107 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Lomba Diikuti</title>
+
+    <link
+      rel="stylesheet"
+      href="/css/output.css"
+    />
   </head>
-  <body>
-    <header>
-      <h1>Lomba yang Diikuti</h1>
-    </header>
-    <main>
-      <table>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama Lomba</th>
-            <th>Deskripsi</th>
-            <th>Aktivitas yang Diikuti</th>
-            <th>Tanggal Mulai</th>
-            <th>Tanggal Selesai</th>
-            <th>Leaderboard</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="lomba, iterStat : ${lombaDiikuti}">
-            <td th:text="${iterStat.index + 1}"></td>
-            <td th:text="${lomba.namaLomba}"></td>
-            <td th:text="${lomba.deskripsiLomba}"></td>
-            <td>
+  <body class="flex justify-center">
+    <div class="w-2/3 pt-20">
+      <header class="mb-6">
+        <h1 class="text-4xl font-semibold">Lomba yang Diikuti</h1>
+      </header>
+      <main>
+        <table class="table-auto w-full text-base">
+          <thead class="text-base uppercase bg-gray-100">
+            <tr>
+              <th>No</th>
+              <th>Nama Lomba</th>
+              <th>Deskripsi</th>
+              <th>Aktivitas yang Diikuti</th>
+              <th>Tanggal Mulai</th>
+              <th>Tanggal Selesai</th>
+              <th>Leaderboard</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            <tr
+              th:each="lomba, iterStat : ${lombaDiikuti}"
+              class="even:bg-gray-100"
+            >
+              <td
+                th:text="${(currentPage - 1) * 10 + iterStat.index + 1}"
+                class="py-4"
+              ></td>
+
+              <td th:text="${lomba.namaLomba}"></td>
+              <td th:text="${lomba.deskripsiLomba}"></td>
+              <td>
+                <a
+                  th:href="@{/aktivitas/detail/{id}(id=${lomba.idAktivitas})}"
+                  th:text="${lomba.judulAktivitas}"
+                ></a>
+              </td>
+              <td th:text="${lomba.tanggalMulai}"></td>
+              <td th:text="${lomba.tanggalSelesai}"></td>
+              <td>
+                <a
+                  th:href="@{/lomba/{id}/leaderboard(id=${lomba.idLomba})}"
+                  class="text-blue-500 hover:text-blue-300"
+                  >Leaderboard</a
+                >
+              </td>
+            </tr>
+            <tr th:if="${lombaDiikuti.isEmpty()}">
+              <td colspan="7">Belum ada lomba yang diikuti.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination start -->
+        <nav
+          th:if="${pageCount > 1}"
+          class="flex justify-end"
+        >
+          <ul class="pagination-container flex text-lg">
+            <!-- Previous Button -->
+            <li class="prev-btn">
               <a
-                th:href="@{/aktivitas/detail/{id}(id=${lomba.idAktivitas})}"
-                th:text="${lomba.judulAktivitas}"
-              ></a>
-            </td>
-            <td th:text="${lomba.tanggalMulai}"></td>
-            <td th:text="${lomba.tanggalSelesai}"></td>
-            <td>
-              <a th:href="@{/lomba/{id}/leaderboard(id=${lomba.idLomba})}"
-                >Leaderboard</a
+                th:href="@{/member/lomba/diikuti(page=${currentPage} - 1)}"
+                aria-label="Previous"
+                th:class="${currentPage}==1 ? 'disabled' : null"
               >
-            </td>
-          </tr>
-          <tr th:if="${lombaDiikuti.isEmpty()}">
-            <td colspan="7">Belum ada lomba yang diikuti.</td>
-          </tr>
-        </tbody>
-      </table>
-    </main>
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+
+            <!-- Page Numbers -->
+            <li
+              th:each="i : ${#numbers.sequence(1, pageCount)}"
+              class="pagination-link"
+            >
+              <a
+                th:href="@{/member/lomba/diikuti(page=${i})}"
+                th:text="${i}"
+                th:class="${currentPage}==${i} ? 'disabled' : null"
+              ></a>
+            </li>
+
+            <!-- Next Button -->
+            <li class="next-btn">
+              <a
+                th:href="@{/member/lomba/diikuti(page=${currentPage} + 1)}"
+                aria-label="Next"
+                th:class="${currentPage}==${pageCount} ? 'disabled' : null"
+              >
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- Pagination end -->
+      </main>
+    </div>
   </body>
 </html>

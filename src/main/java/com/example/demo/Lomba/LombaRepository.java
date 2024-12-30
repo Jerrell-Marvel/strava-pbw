@@ -7,7 +7,9 @@ import com.example.demo.Aktivitas.Aktivitas;
 public interface LombaRepository {
   List<Lomba> findAll();
 
-  List<Leaderboard> findLeaderboardByLombaId(Integer idLomba);
+  List<Leaderboard> findLeaderboardByLombaId(Integer idLomba, int offset);
+
+  int getLeaderboardCountByLombaId(Integer idLomba);
 
   void insertLomba(Lomba lomba);
 
@@ -23,7 +25,9 @@ public interface LombaRepository {
 
   void insertLombaMember(Integer idLomba, Integer idUser, Integer idAktivitas);
 
-  List<LombaMember> findLombaDiikutiByUser(Integer idUser);
+  List<LombaMember> findLombaDiikutiByUser(Integer idUser, int offset);
+
+  int countLombaDiikutiByUser(Integer idUser);
 
   List<LombaBerlangsung> findLombaBerlangsungWithStatus(Integer idUser, int offset, int pageSize);
 
