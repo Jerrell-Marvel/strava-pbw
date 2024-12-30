@@ -21,7 +21,9 @@ public interface LombaRepository {
 
   int getLombaBerlangsungCount();
 
-  List<Aktivitas> findAktivitasNotInLombaMember(Integer idUser, Integer idLomba);
+  List<Aktivitas> findAktivitasNotInLombaMember(Integer idUser, Integer idLomba, int offset);
+
+  int getAktivitasNotInLombaMemberCount(Integer idUser, Integer idLomba);
 
   void insertLombaMember(Integer idLomba, Integer idUser, Integer idAktivitas);
 

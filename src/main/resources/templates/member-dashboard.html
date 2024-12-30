@@ -9,13 +9,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <link
-      rel="stylesheet"
-      href="/css/output.css"
-    />
+    <link rel="stylesheet" href="/css/output.css" />
   </head>
   <body class="flex justify-center">
-    <div class="w-2/3 pt-20">
+    <div th:replace="navbar.html :: *"></div>
+    <div class="w-2/3 pt-28">
       <header>
         <h1 class="text-4xl font-semibold">Aktivitas Dashboard</h1>
       </header>
@@ -26,10 +24,7 @@
         <div>
           <label for="viewSelector">Select View:</label>
           <!-- <p id="selectedViewText">Currently showing: <span id="viewText">week</span></p> -->
-          <select
-            id="viewSelector"
-            class="input"
-          >
+          <select id="viewSelector" class="input">
             <option value="week">Week</option>
             <option value="month">Month</option>
             <option value="year">Year</option>
@@ -37,10 +32,7 @@
           </select>
         </div>
 
-        <button
-          id="downloadPdfBtn"
-          class="primary-btn"
-        >
+        <button id="downloadPdfBtn" class="primary-btn">
           Download Chart as PDF
         </button>
       </div>
@@ -82,12 +74,27 @@
       }
 
       function getMonthName(date) {
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
         return monthNames[date.getMonth()];
       }
 
       function getYearRange(aktivitasList) {
-        const years = aktivitasList.map((aktivitas) => new Date(aktivitas.tanggalAktivitas).getFullYear());
+        const years = aktivitasList.map((aktivitas) =>
+          new Date(aktivitas.tanggalAktivitas).getFullYear()
+        );
         const minYear = Math.min(...years);
         const maxYear = Math.max(...years);
         return { minYear, maxYear };
@@ -103,7 +110,9 @@
         });
 
         const dayLabels = days.map((date) => {
-          return new Date(date).toLocaleDateString("en-US", { weekday: "long" });
+          return new Date(date).toLocaleDateString("en-US", {
+            weekday: "long",
+          });
         });
 
         const durationsByDate = days.reduce((acc, date) => {
@@ -113,14 +122,22 @@
 
         aktivitasList.forEach((aktivitas) => {
           const date = aktivitas.tanggalAktivitas;
-          if (durationsByDate[date] !== undefined && aktivitas.formattedWaktuTempuh) {
+          if (
+            durationsByDate[date] !== undefined &&
+            aktivitas.formattedWaktuTempuh
+          ) {
             const timeParts = aktivitas.formattedWaktuTempuh.split(":");
-            const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+            const durationInSeconds =
+              parseInt(timeParts[0]) * 3600 +
+              parseInt(timeParts[1]) * 60 +
+              parseInt(timeParts[2]);
             durationsByDate[date] += durationInSeconds;
           }
         });
 
-        const durations = days.map((date) => (durationsByDate[date] / 3600).toFixed(2));
+        const durations = days.map((date) =>
+          (durationsByDate[date] / 3600).toFixed(2)
+        );
 
         return { labels: dayLabels, data: durations };
       }
@@ -140,23 +157,44 @@
           if (date.getMonth() === today.getMonth()) {
             // Ensure it's within the current month
             const weekLabel = getWeekOfMonthFixed(date);
-            if (durationsByWeek[weekLabel] !== undefined && aktivitas.formattedWaktuTempuh) {
+            if (
+              durationsByWeek[weekLabel] !== undefined &&
+              aktivitas.formattedWaktuTempuh
+            ) {
               const timeParts = aktivitas.formattedWaktuTempuh.split(":");
-              const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+              const durationInSeconds =
+                parseInt(timeParts[0]) * 3600 +
+                parseInt(timeParts[1]) * 60 +
+                parseInt(timeParts[2]);
               durationsByWeek[weekLabel] += durationInSeconds;
             }
           }
         });
 
         // Convert durations to hours for chart display
-        const durations = weeks.map((week) => (durationsByWeek[week] / 3600).toFixed(2));
+        const durations = weeks.map((week) =>
+          (durationsByWeek[week] / 3600).toFixed(2)
+        );
 
         return { labels: weeks, data: durations };
       }
 
       function renderYearView() {
         const today = new Date();
-        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const months = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
 
         const durationsByMonth = months.reduce((acc, month) => {
           acc[month] = 0; // Initialize total durations for each month
@@ -169,23 +207,34 @@
           if (date.getFullYear() === today.getFullYear()) {
             // Ensure it's within the current year
             const monthName = getMonthName(date);
-            if (durationsByMonth[monthName] !== undefined && aktivitas.formattedWaktuTempuh) {
+            if (
+              durationsByMonth[monthName] !== undefined &&
+              aktivitas.formattedWaktuTempuh
+            ) {
               const timeParts = aktivitas.formattedWaktuTempuh.split(":");
-              const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+              const durationInSeconds =
+                parseInt(timeParts[0]) * 3600 +
+                parseInt(timeParts[1]) * 60 +
+                parseInt(timeParts[2]);
               durationsByMonth[monthName] += durationInSeconds;
             }
           }
         });
 
         // Convert durations to hours for chart display
-        const durations = months.map((month) => (durationsByMonth[month] / 3600).toFixed(2));
+        const durations = months.map((month) =>
+          (durationsByMonth[month] / 3600).toFixed(2)
+        );
 
         return { labels: months, data: durations };
       }
 
       function renderAllView() {
         const { minYear, maxYear } = getYearRange(aktivitasList);
-        const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
+        const years = Array.from(
+          { length: maxYear - minYear + 1 },
+          (_, i) => minYear + i
+        );
 
         const durationsByYear = years.reduce((acc, year) => {
           acc[year] = 0; // Initialize total durations for each year
@@ -195,15 +244,23 @@
         // Group aktivitas data into years
         aktivitasList.forEach((aktivitas) => {
           const year = new Date(aktivitas.tanggalAktivitas).getFullYear();
-          if (durationsByYear[year] !== undefined && aktivitas.formattedWaktuTempuh) {
+          if (
+            durationsByYear[year] !== undefined &&
+            aktivitas.formattedWaktuTempuh
+          ) {
             const timeParts = aktivitas.formattedWaktuTempuh.split(":");
-            const durationInSeconds = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+            const durationInSeconds =
+              parseInt(timeParts[0]) * 3600 +
+              parseInt(timeParts[1]) * 60 +
+              parseInt(timeParts[2]);
             durationsByYear[year] += durationInSeconds;
           }
         });
 
         // Convert durations to hours for chart display
-        const durations = years.map((year) => (durationsByYear[year] / 3600).toFixed(2));
+        const durations = years.map((year) =>
+          (durationsByYear[year] / 3600).toFixed(2)
+        );
 
         return { labels: years, data: durations };
       }
@@ -253,7 +310,14 @@
               x: {
                 title: {
                   display: true,
-                  text: view === "week" ? "Day of the Week" : view === "month" ? "Weeks of the Month" : view === "year" ? "Months of the Year" : "Years",
+                  text:
+                    view === "week"
+                      ? "Day of the Week"
+                      : view === "month"
+                      ? "Weeks of the Month"
+                      : view === "year"
+                      ? "Months of the Year"
+                      : "Years",
                 },
               },
             },
@@ -265,28 +329,32 @@
       renderChart("week");
 
       // Handle View Toggle
-      document.getElementById("viewSelector").addEventListener("change", (event) => {
-        const selectedView = event.target.value;
-        renderChart(selectedView);
-      });
-
-      document.getElementById("downloadPdfBtn").addEventListener("click", function () {
-        html2canvas(document.getElementById("aktivitasChart"), {
-          scale: 2, // Increase resolution by scaling
-          useCORS: true, // Ensures compatibility with external resources
-        }).then(function (canvas) {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF();
-
-          // Calculate dimensions for a sharp PDF image
-          const imgWidth = 180; // Width in mm (standard A4 PDF width is ~210mm)
-          const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
-
-          const imgData = canvas.toDataURL("image/png");
-          doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-          doc.save("aktivitas_chart.pdf");
+      document
+        .getElementById("viewSelector")
+        .addEventListener("change", (event) => {
+          const selectedView = event.target.value;
+          renderChart(selectedView);
         });
-      });
+
+      document
+        .getElementById("downloadPdfBtn")
+        .addEventListener("click", function () {
+          html2canvas(document.getElementById("aktivitasChart"), {
+            scale: 2, // Increase resolution by scaling
+            useCORS: true, // Ensures compatibility with external resources
+          }).then(function (canvas) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Calculate dimensions for a sharp PDF image
+            const imgWidth = 180; // Width in mm (standard A4 PDF width is ~210mm)
+            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+
+            const imgData = canvas.toDataURL("image/png");
+            doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+            doc.save("aktivitas_chart.pdf");
+          });
+        });
 
       // const viewSelector = document.getElementById("viewSelector");
       // const viewText = document.getElementById("viewText");

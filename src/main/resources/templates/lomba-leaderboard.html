@@ -3,13 +3,11 @@
   <head>
     <title>Leaderboard</title>
 
-    <link
-      rel="stylesheet"
-      href="/css/output.css"
-    />
+    <link rel="stylesheet" href="/css/output.css" />
   </head>
   <body class="flex justify-center">
-    <div class="w-2/3">
+    <div th:replace="navbar.html :: *"></div>
+    <div class="w-2/3 pt-28">
       <header class="mb-6">
         <h1 class="text-4xl font-semibold">Leaderboard</h1>
       </header>
@@ -17,7 +15,7 @@
         <table class="table-auto w-full text-base">
           <thead class="text-base uppercase bg-gray-100">
             <tr>
-              <th>Rank</th>
+              <th class="py-4">Rank</th>
               <th>Nama Member</th>
               <th>Jarak Tempuh</th>
               <th>Waktu Tempuh</th>
@@ -29,10 +27,7 @@
               th:each="entry, iterStat : ${leaderboard}"
               class="even:bg-gray-100"
             >
-              <td
-                th:text="${iterStat.index + 1}"
-                class="py-4"
-              ></td>
+              <td th:text="${iterStat.index + 1}" class="py-4"></td>
               <td th:text="${entry.namaUser}"></td>
               <td th:text="${entry.jarakTempuh + ' ' + entry.satuanJarak}"></td>
 
@@ -41,16 +36,15 @@
               <td th:text="${entry.formattedAvgPace} + ' /km'"></td>
             </tr>
             <tr th:if="${leaderboard.isEmpty()}">
-              <td colspan="5">Belum ada aktivitas pada lomba ini.</td>
+              <td colspan="5" class="pt-5">
+                Belum ada aktivitas pada lomba ini.
+              </td>
             </tr>
           </tbody>
         </table>
 
         <!-- Pagination start -->
-        <nav
-          th:if="${pageCount > 1}"
-          class="flex justify-end"
-        >
+        <nav th:if="${pageCount > 1}" class="flex justify-end">
           <ul class="pagination-container flex text-lg">
             <!-- Previous Button -->
             <li class="prev-btn">

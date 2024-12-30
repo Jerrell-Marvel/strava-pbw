@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="/css/output.css" />
   </head>
   <body class="flex justify-center">
-    <div class="w-2/3 pt-20">
+    <div th:replace="navbar.html :: *"></div>
+    <div class="w-2/3 pt-28">
       <h1 class="text-4xl font-semibold pb-5">Tambah Aktivitas</h1>
       <form
         th:action="@{/aktivitas/tambah}"

@@ -8,8 +8,8 @@
     <link href="/css/output.css" rel="stylesheet" />
   </head>
   <body class="flex justify-center">
-    <!-- <div th:replace="navbar.html :: *"></div> -->
-    <div class="w-2/3 pt-20">
+    <div th:replace="navbar.html :: *"></div>
+    <div class="w-2/3 pt-28">
       <header class="justify-between w-full flex">
         <h1 class="text-4xl font-semibold">Data Member</h1>
       </header>
@@ -51,7 +51,7 @@
         </section>
 
         <!-- Pagination start -->
-        <nav th:if="${pageCount > 1}">
+        <nav th:if="${pageCount > 1}" class="flex justify-end">
           <ul class="pagination-container flex text-lg">
             <li class="prev-btn">
               <a

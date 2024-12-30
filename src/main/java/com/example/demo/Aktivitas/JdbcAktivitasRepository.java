@@ -50,7 +50,8 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
     int offset = (page - 1) * 10;
     String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
         "a.jarak_tempuh, a.satuan_jarak, a.id_user " +
-        "FROM aktivitas a " + "WHERE a.id_user = ? AND a.is_active = true LIMIT 10 OFFSET ?";
+        "FROM aktivitas a "
+        + "WHERE a.id_user = ? AND a.is_active = true ORDER BY a.tanggal_aktivitas DESC, a.id_aktivitas DESC LIMIT 10 OFFSET ?";
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser, offset);
   }
 

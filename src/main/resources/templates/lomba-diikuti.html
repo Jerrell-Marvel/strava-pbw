@@ -3,13 +3,11 @@
   <head>
     <title>Lomba Diikuti</title>
 
-    <link
-      rel="stylesheet"
-      href="/css/output.css"
-    />
+    <link rel="stylesheet" href="/css/output.css" />
   </head>
   <body class="flex justify-center">
-    <div class="w-2/3 pt-20">
+    <div th:replace="navbar.html :: *"></div>
+    <div class="w-2/3 pt-28">
       <header class="mb-6">
         <h1 class="text-4xl font-semibold">Lomba yang Diikuti</h1>
       </header>
@@ -17,7 +15,7 @@
         <table class="table-auto w-full text-base">
           <thead class="text-base uppercase bg-gray-100">
             <tr>
-              <th>No</th>
+              <th class="py-4">No</th>
               <th>Nama Lomba</th>
               <th>Deskripsi</th>
               <th>Aktivitas yang Diikuti</th>
@@ -61,10 +59,7 @@
         </table>
 
         <!-- Pagination start -->
-        <nav
-          th:if="${pageCount > 1}"
-          class="flex justify-end"
-        >
+        <nav th:if="${pageCount > 1}" class="flex justify-end">
           <ul class="pagination-container flex text-lg">
             <!-- Previous Button -->
             <li class="prev-btn">

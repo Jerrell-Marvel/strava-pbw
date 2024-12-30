@@ -14,6 +14,7 @@ import com.example.demo.RequiredRole;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 
@@ -21,6 +22,13 @@ import org.springframework.validation.BindingResult;
 public class UserController {
   @Autowired
   private UserService userService;
+
+  @GetMapping("/")
+  public String getHome(HttpSession session, Model model) {
+    model.addAttribute("userRole", session.getAttribute("role"));
+
+    return "index";
+  }
 
   @GetMapping("/register")
   public String getRegister(User user) {
@@ -66,6 +74,7 @@ public class UserController {
     model.addAttribute("pageCount", pageCount);
     model.addAttribute("currentPage", currentPage);
     model.addAttribute("memberList", memberList);
+    model.addAttribute("userRole", "admin");
     return "data-member";
   }
 
@@ -74,24 +83,29 @@ public class UserController {
   public String getEditMember(@PathVariable("id") Integer idUser, Model model) {
     User user = userService.getUserById(idUser);
     if (user == null) {
-      return "redirect:/admin/data-member"; // Redirect jika user tidak ditemukan
+      model.addAttribute("userRole", "admin");
+      return "redirect:/admin/data-member";
     }
     model.addAttribute("user", user);
+    model.addAttribute("userRole", "admin");
     return "edit-member";
   }
 
   @PostMapping("/admin/member/edit")
   @RequiredRole("admin")
-  public String postEditMember(@Valid User user, BindingResult bindingResult) {
+  public String postEditMember(@Valid User user, BindingResult bindingResult, Model model) {
     if (bindingResult.hasErrors()) {
-      return "edit-member"; // Kembali ke form jika ada error
+      model.addAttribute("userRole", "admin");
+      return "edit-member";
     }
 
     try {
       userService.updateMember(user);
-      return "redirect:/admin/data-member"; // Redirect ke daftar member setelah berhasil
+      model.addAttribute("userRole", "admin");
+      return "redirect:/admin/data-member";
     } catch (Exception e) {
       bindingResult.rejectValue("email", "error.email", "Email sudah digunakan");
+      model.addAttribute("userRole", "admin");
       return "edit-member";
     }
   }

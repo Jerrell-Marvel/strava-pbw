@@ -36,13 +36,14 @@ public class LombaController {
     model.addAttribute("lombaList", lombaList);
     model.addAttribute("currentPage", page);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("userRole", "admin");
 
     return "lomba-list";
   }
 
   @GetMapping("/lomba/{id}/leaderboard")
   public String getLeaderboard(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-      @PathVariable("id") Integer idLomba, Model model) {
+      @PathVariable("id") Integer idLomba, Model model, HttpSession session) {
     List<Leaderboard> leaderboard = lombaService.getLeaderboardByLombaId(idLomba, page);
 
     int totalLeaderboard = lombaService.getLeaderboardByLombaIdCount(idLomba);
@@ -52,6 +53,7 @@ public class LombaController {
     model.addAttribute("pageCount", pageCount);
 
     model.addAttribute("leaderboard", leaderboard);
+    model.addAttribute("userRole", session.getAttribute("role"));
     return "lomba-leaderboard";
   }
 
@@ -59,16 +61,19 @@ public class LombaController {
   @RequiredRole("admin")
   public String getTambahLombaPage(Model model) {
     model.addAttribute("lomba", new Lomba());
+    model.addAttribute("userRole", "admin");
     return "lomba-tambah";
   }
 
   @PostMapping("/admin/lomba/tambah")
   @RequiredRole("admin")
-  public String tambahLomba(@Valid Lomba lomba, BindingResult result) {
+  public String tambahLomba(@Valid Lomba lomba, BindingResult result, Model model) {
     if (result.hasErrors()) {
+      model.addAttribute("userRole", "admin");
       return "lomba-tambah";
     }
     lombaService.addLomba(lomba);
+    model.addAttribute("userRole", "admin");
     return "redirect:/admin/lomba";
   }
 
@@ -88,6 +93,7 @@ public class LombaController {
     model.addAttribute("lombaList", lombaList);
     model.addAttribute("currentPage", page);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("userRole", "member");
 
     return "lomba-berlangsung";
   }
@@ -96,12 +102,34 @@ public class LombaController {
   @RequiredRole("member")
   public String pilihAktivitas(
       @PathVariable("id") Integer idLomba,
+      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
       Model model,
       HttpSession session) {
     Integer idUser = (Integer) session.getAttribute("idUser");
-    List<Aktivitas> aktivitasList = lombaService.getAktivitasNotInLombaMember(idUser, idLomba);
+    int pageSize = 10;
+    List<Aktivitas> aktivitasList = lombaService.getAktivitasNotInLombaMember(idUser, idLomba, page);
+
+    aktivitasList.forEach(aktivitas -> {
+      if (aktivitas.getWaktuTempuh() != null) {
+        long hours = aktivitas.getWaktuTempuh().toHours();
+        long minutes = aktivitas.getWaktuTempuh().toMinutes() % 60;
+        long seconds = aktivitas.getWaktuTempuh().getSeconds() % 60;
+        String formatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        aktivitas.setFormattedWaktuTempuh(formatted);
+        System.out.println("Formatted Waktu Tempuh: " + formatted); // Debug log
+      } else {
+        System.out.println("Waktu Tempuh is null for Aktivitas ID: " + aktivitas.getIdAktivitas());
+      }
+    });
+
+    int totalLomba = lombaService.getAktivitasNotInLombaMemberCount(idUser, idLomba);
+    int pageCount = (int) Math.ceil((double) totalLomba / pageSize);
     model.addAttribute("aktivitasList", aktivitasList);
     model.addAttribute("idLomba", idLomba);
+    model.addAttribute("currentPage", page);
+    model.addAttribute("pageCount", pageCount);
+    model.addAttribute("userRole",
+        "member");
     return "pilih-aktivitas";
   }
 
@@ -110,9 +138,10 @@ public class LombaController {
   public String submitAktivitas(
       @PathVariable("id") Integer idLomba,
       @RequestParam("idAktivitas") Integer idAktivitas,
-      HttpSession session) {
+      HttpSession session, Model model) {
     Integer idUser = (Integer) session.getAttribute("idUser");
     lombaService.addLombaMember(idLomba, idUser, idAktivitas);
+    model.addAttribute("userRole", "member");
     return "redirect:/member/lomba/diikuti";
   }
 
@@ -129,6 +158,7 @@ public class LombaController {
 
     model.addAttribute("currentPage", page);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("userRole", "member");
 
     System.out.println("lorem " + pageCount);
     return "lomba-diikuti";
