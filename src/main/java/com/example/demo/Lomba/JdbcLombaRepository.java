@@ -116,6 +116,7 @@ public class JdbcLombaRepository implements LombaRepository {
     String sql = """
             SELECT * FROM Lomba
             WHERE CURRENT_DATE BETWEEN tanggal_mulai AND tanggal_selesai
+            ORDER BY Lomba.tanggal_mulai DESC, Lomba.id_lomba DESC
             LIMIT ? OFFSET ?
         """;
     return jdbcTemplate.query(sql, this::mapRowToLomba, pageSize, offset);
@@ -138,6 +139,7 @@ public class JdbcLombaRepository implements LombaRepository {
             WHERE a.id_user = ?
               AND lm.id_aktivitas IS NULL
               AND a.tanggal_aktivitas BETWEEN l.tanggal_mulai AND l.tanggal_selesai
+            ORDER BY a.tanggal_aktivitas DESC, a.id_aktivitas DESC
             LIMIT 10 OFFSET ?
         """;
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idLomba, idUser, offset);
@@ -170,7 +172,9 @@ public class JdbcLombaRepository implements LombaRepository {
             FROM Lomba l
             JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba
             JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
-            WHERE lm.id_user = ? LIMIT 10 OFFSET ?
+            WHERE lm.id_user = ?
+            ORDER BY l.tanggal_mulai DESC, l.id_lomba DESC
+            LIMIT 10 OFFSET ?
         """;
     return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaMember(
         rs.getInt("id_lomba"),

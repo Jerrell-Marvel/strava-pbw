@@ -36,7 +36,9 @@
               <td th:text="${entry.formattedAvgPace} + ' /km'"></td>
             </tr>
             <tr th:if="${leaderboard.isEmpty()}">
-              <td colspan="5">Belum ada aktivitas pada lomba ini.</td>
+              <td colspan="5" class="pt-5">
+                Belum ada aktivitas pada lomba ini.
+              </td>
             </tr>
           </tbody>
         </table>

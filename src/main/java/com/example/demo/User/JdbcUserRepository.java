@@ -28,7 +28,7 @@ public class JdbcUserRepository implements UserRepository {
   @Override
   public List<User> findMembers(int page) {
     int offset = (page - 1) * 10;
-    String sql = "SELECT * FROM Users WHERE role_user = 'member' LIMIT 10 OFFSET ?";
+    String sql = "SELECT * FROM Users WHERE role_user = 'member' ORDER BY Users.id_user DESC LIMIT 10 OFFSET ?";
     return jdbcTemplate.query(sql, this::mapRowToUser, offset);
   }
 
