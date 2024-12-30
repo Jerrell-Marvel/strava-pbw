@@ -48,8 +48,13 @@ public class LombaService {
     return lombaRepository.getLombaBerlangsungCount();
   }
 
-  public List<Aktivitas> getAktivitasNotInLombaMember(Integer idUser, Integer idLomba) {
-    return lombaRepository.findAktivitasNotInLombaMember(idUser, idLomba);
+  public List<Aktivitas> getAktivitasNotInLombaMember(Integer idUser, Integer idLomba, int page) {
+    int offset = (page - 1) * 10;
+    return lombaRepository.findAktivitasNotInLombaMember(idUser, idLomba, offset);
+  }
+
+  public int getAktivitasNotInLombaMemberCount(Integer idUser, Integer idLomba) {
+    return lombaRepository.getAktivitasNotInLombaMemberCount(idUser, idLomba);
   }
 
   public void addLombaMember(Integer idLomba, Integer idUser, Integer idAktivitas) {

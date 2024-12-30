@@ -131,11 +131,11 @@
     </div>
   </div>
   <!-- Script -->
-  <script>
+  <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", () => {
       // Simulasi login dan role
       let isLoggedIn = true; // Ubah ke true jika user sudah login
-      const userRole = "member"; // 'member' atau 'admin'
+      const userRole = /*[[${userRole}]]*/ null;
 
       if (!userRole) {
         isLoggedIn = false;

@@ -4,54 +4,103 @@
     <title>Pilih Aktivitas</title>
   </head>
   <link rel="stylesheet" href="/css/output.css" />
-  <body>
+  <body class="flex justify-center">
     <div th:replace="navbar.html :: *"></div>
-    <header>
-      <h1>Pilih Aktivitas</h1>
-    </header>
-    <main>
-      <form
-        th:action="@{/member/lomba/{id}/pilih-aktivitas(id=${idLomba})}"
-        method="post"
-      >
-        <table>
-          <thead>
-            <tr>
-              <th>Pilih</th>
-              <th>Tanggal Aktivitas</th>
-              <th>Judul</th>
-              <th>Waktu Tempuh</th>
-              <th>Jarak Tempuh</th>
-              <th>Satuan Jarak</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="aktivitas : ${aktivitasList}">
-              <td>
-                <input
-                  type="radio"
-                  th:value="${aktivitas.idAktivitas}"
-                  name="idAktivitas"
-                />
-              </td>
-              <td th:text="${aktivitas.tanggalAktivitas}"></td>
-              <td>
-                <a
-                  th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
-                  th:text="${aktivitas.judul}"
-                ></a>
-              </td>
-              <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
-              <td th:text="${aktivitas.jarakTempuh}"></td>
-              <td th:text="${aktivitas.satuanJarak}"></td>
-            </tr>
-            <tr th:if="${aktivitasList.isEmpty()}">
-              <td colspan="6">Tidak ada aktivitas tersedia.</td>
-            </tr>
-          </tbody>
-        </table>
-        <button type="submit">Pilih Aktivitas</button>
-      </form>
-    </main>
+    <div class="pt-28">
+      <header>
+        <h1 class="text-4xl font-semibold">Pilih Aktivitas</h1>
+      </header>
+      <main class="pt-5">
+        <form
+          th:action="@{/member/lomba/{id}/pilih-aktivitas(id=${idLomba})}"
+          method="post"
+        >
+          <table class="table-auto w-full text-base">
+            <thead class="text-base uppercase bg-gray-100">
+              <tr class="border-b-gray-200 border-b-2">
+                <th class="py-4 px-2">Pilih</th>
+                <th>Tanggal Aktivitas</th>
+                <th>Judul</th>
+                <th>Waktu Tempuh</th>
+                <th class="px-2">Jarak Tempuh</th>
+                <th class="px-2">Satuan Jarak</th>
+              </tr>
+            </thead>
+            <tbody class="text-center">
+              <tr
+                th:each="aktivitas : ${aktivitasList}"
+                class="even:bg-gray-100"
+              >
+                <td class="py-4">
+                  <input
+                    type="radio"
+                    th:value="${aktivitas.idAktivitas}"
+                    name="idAktivitas"
+                  />
+                </td>
+                <td th:text="${aktivitas.tanggalAktivitas}"></td>
+                <td>
+                  <a
+                    th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
+                    th:text="${aktivitas.judul}"
+                    class="text-blue-500 hover:text-blue-300"
+                  ></a>
+                </td>
+                <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
+                <td th:text="${aktivitas.jarakTempuh}"></td>
+                <td th:text="${aktivitas.satuanJarak}"></td>
+              </tr>
+              <tr th:if="${aktivitasList.isEmpty()}">
+                <td colspan="6">Tidak ada aktivitas tersedia.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="flex justify-between mt-5">
+            <button type="submit" class="primary-btn">Pilih Aktivitas</button>
+
+            <!-- Pagination start -->
+            <nav th:if="${pageCount > 1}" class="flex justify-end">
+              <ul class="pagination-container flex text-lg">
+                <!-- Previous Button -->
+                <li class="prev-btn">
+                  <a
+                    th:href="@{/member/lomba/{id}/pilih-aktivitas(page=${currentPage} - 1, id=${idLomba})}"
+                    aria-label="Previous"
+                    th:class="${currentPage}==1 ? 'disabled' : null"
+                  >
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+
+                <!-- Page Numbers -->
+                <li
+                  th:each="i : ${#numbers.sequence(1, pageCount)}"
+                  class="pagination-link"
+                >
+                  <a
+                    th:href="@{/member/lomba/{id}/pilih-aktivitas(page=${i}, id=${idLomba})}"
+                    th:text="${i}"
+                    th:class="${currentPage}==${i} ? 'disabled' : null"
+                  ></a>
+                </li>
+
+                <!-- Next Button -->
+                <li class="next-btn">
+                  <a
+                    th:href="@{/member/lomba/{id}/pilih-aktivitas(page=${currentPage} + 1, id=${idLomba})}"
+                    aria-label="Next"
+                    th:class="${currentPage}==${pageCount} ? 'disabled' : null"
+                  >
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <!-- Pagination end -->
+        </form>
+      </main>
+    </div>
   </body>
 </html>

@@ -24,21 +24,21 @@ public class LoginController {
       return "login";
     }
 
-    return "redirect:/dashboard";
+    return "redirect:/";
   }
 
-  @GetMapping("/dashboard")
-  @RequiredRole("*")
-  public String getDashboard(HttpSession session, Model model) {
-    String email = (String) session.getAttribute("email");
-    if (email == null) {
-      return "redirect:/login";
-    }
+  // @GetMapping("/dashboard")
+  // @RequiredRole("*")
+  // public String getDashboard(HttpSession session, Model model) {
+  // String email = (String) session.getAttribute("email");
+  // if (email == null) {
+  // return "redirect:/login";
+  // }
 
-    model.addAttribute("email", email);
+  // model.addAttribute("email", email);
 
-    return "dashboard";
-  }
+  // return "dashboard";
+  // }
 
   @PostMapping("/login")
   public String postLogin(
@@ -51,7 +51,7 @@ public class LoginController {
       session.setAttribute("email", user.getEmail());
       session.setAttribute("role", user.getRoleUser());
       session.setAttribute("idUser", user.getIdUser());
-      return "redirect:/dashboard";
+      return "redirect:/";
     } else {
       model.addAttribute("status", "failed");
       return "login";
