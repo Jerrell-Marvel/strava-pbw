@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link href="/css/output.css" rel="stylesheet" />
   </head>
   <body>
+    <div th:replace="navbar.html :: *"></div>
     <h1>Login</h1>
     <p th:if="${status}==failed">Please check email or password</p>
     <form action="login" method="post">

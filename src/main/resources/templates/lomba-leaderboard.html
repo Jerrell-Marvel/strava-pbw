@@ -3,12 +3,10 @@
   <head>
     <title>Leaderboard</title>
 
-    <link
-      rel="stylesheet"
-      href="/css/output.css"
-    />
+    <link rel="stylesheet" href="/css/output.css" />
   </head>
   <body class="flex justify-center">
+    <div th:replace="navbar.html :: *"></div>
     <div class="w-2/3">
       <header class="mb-6">
         <h1 class="text-4xl font-semibold">Leaderboard</h1>
@@ -29,10 +27,7 @@
               th:each="entry, iterStat : ${leaderboard}"
               class="even:bg-gray-100"
             >
-              <td
-                th:text="${iterStat.index + 1}"
-                class="py-4"
-              ></td>
+              <td th:text="${iterStat.index + 1}" class="py-4"></td>
               <td th:text="${entry.namaUser}"></td>
               <td th:text="${entry.jarakTempuh + ' ' + entry.satuanJarak}"></td>
 
@@ -47,10 +42,7 @@
         </table>
 
         <!-- Pagination start -->
-        <nav
-          th:if="${pageCount > 1}"
-          class="flex justify-end"
-        >
+        <nav th:if="${pageCount > 1}" class="flex justify-end">
           <ul class="pagination-container flex text-lg">
             <!-- Previous Button -->
             <li class="prev-btn">
