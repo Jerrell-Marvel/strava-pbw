@@ -1,5 +1,6 @@
 package com.example.demo.User;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,4 +36,21 @@ public class UserService {
     }
     return null;
   }
+
+  public List<User> getMembers(int page) {
+    return userRepository.findMembers(page);
+  }
+
+  public int getMemberCount() {
+    return userRepository.getMemberCount();
+  }
+
+  public User getUserById(Integer idUser) {
+    return userRepository.findById(idUser).orElse(null);
+  }
+
+  public void updateMember(User user) throws Exception {
+    userRepository.update(user);
+  }
+
 }

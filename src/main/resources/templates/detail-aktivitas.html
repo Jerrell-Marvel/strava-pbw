@@ -4,50 +4,88 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detail Aktivitas</title>
+    <link href="/css/output.css" rel="stylesheet" />
   </head>
-  <body>
-    <header>
-      <h1 th:text="${aktivitas.judul}">Judul Aktivitas</h1>
-    </header>
-    <main>
-      <section>
-        <p>
-          <strong>Tanggal Aktivitas:</strong>
-          <span th:text="${aktivitas.tanggalAktivitas}"></span>
-        </p>
-        <p>
-          <strong>Deskripsi:</strong>
-          <span
-            th:text="${aktivitas.deskripsi ?: 'Tidak ada deskripsi'}"
-          ></span>
-        </p>
-        <p>
-          <strong>Waktu Tempuh:</strong>
-          <span th:text="${aktivitas.formattedWaktuTempuh}"></span>
-        </p>
-        <p>
-          <strong>Jarak Tempuh:</strong>
-          <span th:text="${aktivitas.jarakTempuh}"></span>
-          <span th:text="${aktivitas.satuanJarak}"></span>
-        </p>
+  <body class="flex justify-center">
+    <div class="w-2/3 pt-20">
+      <header class="pb-5">
+        <h1 class="text-4xl font-semibold">Detail Aktivitas</h1>
+      </header>
+      <div class="bg-slate-200 w-full h-[1px]"></div>
 
-        <h3>Foto Aktivitas</h3>
-        <div th:if="${aktivitas.urlFoto.isEmpty()}">
-          <p>Tidak ada foto.</p>
-        </div>
-        <div th:if="${!aktivitas.urlFoto.isEmpty()}">
-          <ul>
-            <li th:each="foto : ${aktivitas.urlFoto}">
-              <img
-                th:src="@{/uploads/aktivitas/{foto}(foto=${foto})}"
-                alt="Foto Aktivitas"
-                style="max-width: 300px"
-              />
-            </li>
-          </ul>
-        </div>
-      </section>
-      <!-- <a href="/aktivitas">Kembali ke Daftar Aktivitas</a> -->
-    </main>
+      <main class="pt-5">
+        <section>
+          <div class="w-full">
+            <div class="flex w-full justify-between items-center">
+              <h1 th:text="${aktivitas.judul}" class="text-3xl font-semibold">
+                Judul Aktivitas
+              </h1>
+              <p class="mt-5">
+                <!-- <strong class="text-lg">Tanggal Aktivitas:</strong> -->
+                <span
+                  th:text="${aktivitas.tanggalAktivitas}"
+                  class="text-xl"
+                ></span>
+              </p>
+            </div>
+            <p>
+              <!-- <strong class="text-lg">Deskripsi:</strong> -->
+              <span
+                th:text="${aktivitas.deskripsi ?: 'Tidak ada deskripsi'}"
+                class="text-lg"
+              ></span>
+            </p>
+          </div>
+          <!-- <div class="bg-slate-200 w-full h-[1px]"></div> -->
+
+          <h3 class="text-2xl pt-10 font-semibold pb-5 text-orange-500">
+            Foto Aktivitas
+          </h3>
+          <div class="grid grid-cols-3 gap-8">
+            <div th:if="${aktivitas.urlFoto.isEmpty()}">
+              <p class="text-lg">Tidak ada foto.</p>
+            </div>
+            <div th:if="${!aktivitas.urlFoto.isEmpty()} " class="col-span-2">
+              <ul class="flex flex-wrap gap-6 border-2 p-6 rounded-lg">
+                <li th:each="foto : ${aktivitas.urlFoto}">
+                  <img
+                    th:src="@{/uploads/aktivitas/{foto}(foto=${foto})}"
+                    alt="Foto Aktivitas"
+                    class="aspect-square max-w-[300px]"
+                  />
+                </li>
+              </ul>
+            </div>
+            <div class="flex flex-col shadow-md rounded-md p-6 w-full h-fit">
+              <p>
+                <span
+                  th:text="${aktivitas.formattedWaktuTempuh}"
+                  class="text-3xl"
+                ></span>
+                <br />
+                <strong class="text-lg font-semibold mt-2 text-orange-500"
+                  >Waktu Tempuh</strong
+                >
+              </p>
+              <p class="mt-5">
+                <span
+                  th:text="${aktivitas.jarakTempuh}"
+                  class="text-3xl"
+                ></span>
+                <span
+                  th:text="${aktivitas.satuanJarak}"
+                  class="text-3xl"
+                ></span>
+                <br />
+                <strong class="text-lg font-semibold mt-2 text-orange-500"
+                  >Jarak Tempuh</strong
+                >
+              </p>
+            </div>
+          </div>
+        </section>
+        <!-- <a href="/aktivitas">Kembali ke Daftar Aktivitas</a> -->
+      </main>
+    </div>
   </body>
 </html>
