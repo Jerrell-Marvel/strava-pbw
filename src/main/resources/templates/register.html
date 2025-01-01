@@ -1,11 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Document</title>
+
+    <link
+      rel="stylesheet"
+      href="/css/output.css"
+    />
     <style>
-      .form-label {
+      /* .form-label {
         width: 150px;
         display: inline-block;
         margin-bottom: 10px;
@@ -13,70 +24,100 @@
 
       .form-control {
         width: 150px;
-      }
+      } */
     </style>
   </head>
   <body>
-    <h1>Register</h1>
-    <form method="post" action="register" th:object="${user}">
-      <label>
-        <span class="form-label">Email</span>:
-        <input
-          type="text"
-          name="email"
-          class="form-control"
-          th:field="*{email}"
-        />
-        <label th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
-          Email must contain at least 4 character
+    <div th:replace="navbar.html :: *"></div>
+    <div class="min-h-screen flex justify-center items-center">
+      <form
+        method="post"
+        action="register"
+        th:object="${user}"
+        class="p-8 shadow-xl rounded-md flex flex-col gap-4 w-1/4"
+      >
+        <h1 class="text-orange-500 text-3xl font-bold text-center">Daftar Akun</h1>
+        <label>
+          <span class="form-label block mb-2">Email :</span>
+          <input
+            type="text"
+            name="email"
+            th:field="*{email}"
+            class="input w-full"
+          />
+          <label
+            th:if="${#fields.hasErrors('email')}"
+            th:errors="*{email}"
+            class="text-red-500"
+          >
+            Email must contain at least 4 character
+          </label>
         </label>
-      </label>
-      <br />
 
-      <label>
-        <span class="form-label">Password</span>:
-        <input
-          type="password"
-          name="password"
-          class="form-control"
-          th:field="*{password}"
-        />
-        <label th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
-          Password must contain at least 4 character
+        <label>
+          <span class="form-label block">Password :</span>
+          <input
+            type="password"
+            name="password"
+            th:field="*{password}"
+            class="input w-full"
+          />
+          <label
+            th:if="${#fields.hasErrors('password')}"
+            th:errors="*{password}"
+            class="text-red-500"
+          >
+            Password must contain at least 4 character
+          </label>
         </label>
-      </label>
-      <br />
 
-      <label>
-        <span class="form-label">Confirm Password</span>:
-        <input
-          type="password"
-          name="confirmpassword"
-          class="form-control"
-          th:field="*{confirmpassword}"
-        />
-        <label
-          th:if="${#fields.hasErrors('confirmpassword')}"
-          th:errors="*{confirmpassword}"
-        ></label>
-      </label>
-      <br />
-
-      <label>
-        <span class="form-label">Nama</span>:
-        <input
-          type="text"
-          name="nama_user"
-          class="form-control"
-          th:field="*{namaUser}"
-        />
-        <label th:if="${#fields.hasErrors('namaUser')}" th:errors="*{namaUser}">
-          Nama must contain at least 4 character
+        <label>
+          <span class="form-label block mb-2">Confirm Password :</span>
+          <input
+            type="password"
+            name="confirmpassword"
+            th:field="*{confirmpassword}"
+            class="input w-full"
+          />
+          <label
+            th:if="${#fields.hasErrors('confirmpassword')}"
+            th:errors="*{confirmpassword}"
+            class="text-red-500"
+          ></label>
         </label>
-      </label>
-      <br />
 
-      <input type="submit" value="Register" />
-    </form>
+        <label>
+          <span class="form-label block mb-2">Nama :</span>
+          <input
+            type="text"
+            name="nama_user"
+            th:field="*{namaUser}"
+            class="input w-full"
+          />
+          <label
+            th:if="${#fields.hasErrors('namaUser')}"
+            th:errors="*{namaUser}"
+            class="text-red-500"
+          >
+            Nama must contain at least 4 character
+          </label>
+        </label>
+
+        <input
+          type="submit"
+          value="Register"
+          class="primary-btn"
+        />
+
+        <p class="text-center">
+          Sudah memiliki akun?
+          <a
+            href="/login"
+            class="text-orange-500"
+            >Login</a
+          >
+        </p>
+      </form>
+    </div>
   </body>
 </html>
