@@ -40,3 +40,5 @@ out/
 
 /src/main/resources/static/css/output.css
 node_modules/
+
+notes.txt
