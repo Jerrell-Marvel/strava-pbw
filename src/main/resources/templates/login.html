@@ -2,18 +2,60 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Document</title>
-    <link href="/css/output.css" rel="stylesheet" />
+    <link
+      href="/css/output.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div th:replace="navbar.html :: *"></div>
-    <h1 class="pt-28">Login</h1>
-    <p th:if="${status}==failed">Please check email or password</p>
-    <form action="login" method="post">
-      <input type="text" name="email" placeholder="email" /><br />
-      <input type="password" name="password" placeholder="password" /><br />
-      <input type="submit" value="login" />
-    </form>
+
+    <div class="min-h-screen flex justify-center items-center">
+      <form
+        action="login"
+        method="post"
+        class="p-8 shadow-xl rounded-md flex flex-col gap-6 w-1/4"
+      >
+        <h1 class="text-orange-500 text-3xl font-bold text-center">Login to Stravibe</h1>
+        <input
+          type="text"
+          name="email"
+          placeholder="email"
+          class="input"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="password"
+          class="input"
+        />
+        <!-- Error Message -->
+        <div
+          class="text-red-500 text-center"
+          th:if="${status == 'failed'}"
+        >
+          Email or password is incorrect. Please try again.
+        </div>
+        <input
+          type="submit"
+          value="Login"
+          class="primary-btn w-full"
+        />
+
+        <p class="text-center">
+          Tidak memiliki akun?
+          <a
+            href="/register"
+            class="text-orange-500"
+            >Register</a
+          >
+        </p>
+      </form>
+    </div>
   </body>
 </html>
