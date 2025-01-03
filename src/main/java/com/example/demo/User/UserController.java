@@ -54,7 +54,7 @@ public class UserController {
       return "register";
     }
 
-    return "redirect:/results";
+    return "redirect:/";
   }
 
   @GetMapping("/results")
