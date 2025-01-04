@@ -5,6 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link href="/css/output.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
+    <style>
+      .swiper {
+        width: 100%;
+        height: 100%;
+      }
+
+      .swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .swiper-button-prev {
+        color: orange;
+      }
+
+      .swiper-button-next {
+        color: orange;
+      }
+
+      .swiper-pagination-bullet-active {
+        background-color: #f97316 !important;
+      }
+    </style>
   </head>
   <body>
     <div th:replace="navbar.html :: *"></div>
@@ -25,5 +64,76 @@
         </p>
       </div>
     </div>
+
+    <div class="grid grid-cols-2 gap-x-16 px-32 py-20">
+      <div class="flex items-center">
+        <div>
+          <h2 class="font-semibold text-orange-500 text-5xl">About Us</h2>
+          <p class="text-2xl mt-6 text-justify">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia
+            dolore nemo commodi voluptate, perspiciatis veniam porro consectetur
+            dolor sed doloremque nisi voluptatibus eveniet nesciunt inventore et
+            omnis deserunt deleniti odio? Deserunt, rem sapiente, assumenda
+            numquam porro ab distinctio culpa odio id dicta ex voluptas mollitia
+            ducimus laboriosam. Officia perferendis dolorem, aspernatur totam
+            repudiandae eveniet reiciendis nostrum, quaerat, harum hic ducimus
+            temporibus at autem facere exercitationem voluptatibus! Ut, omnis
+            beatae doloribus fuga consectetur fugit quasi ab quis commodi
+            blanditiis quae. Deleniti voluptas tenetur aspernatur voluptate?
+            Itaque ea, tempora doloribus aliquam aperiam, perferendis eum nobis
+            ipsam reiciendis qui magni placeat ullam. Quam.
+          </p>
+        </div>
+      </div>
+
+      <!-- Swiper -->
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <img src="/assets/run-image2.jpg" alt="" />
+          </div>
+          <div class="swiper-slide">
+            <img src="/assets/run-image.jpg" alt="" />
+          </div>
+          <div class="swiper-slide">
+            <img src="/assets/run-image3.jpg" alt="" />
+          </div>
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+
+    <footer
+      class="bg-orange-500 text-white flex justify-center items-center py-6 px-10"
+    >
+      <p class="font-normal text-2xl">
+        &copy;2024 Stravibe. All right reserved.
+      </p>
+    </footer>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+      var swiper = new Swiper(".mySwiper", {
+        cssMode: true,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        mousewheel: true,
+        keyboard: true,
+        autoplay: {
+          delay: 5000,
+        },
+      });
+    </script>
   </body>
 </html>
