@@ -45,6 +45,9 @@
               required
               class="input block w-full"
             />
+            <p th:if="${#fields.hasErrors('tanggalMulai')}" class="text-red-500 text-sm mt-1">
+              <span th:errors="*{tanggalMulai}"></span>
+            </p>
           </div>
           <div>
             <label>Tanggal Selesai</label>

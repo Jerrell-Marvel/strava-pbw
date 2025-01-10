@@ -68,6 +68,19 @@ public class LombaController {
   @PostMapping("/admin/lomba/tambah")
   @RequiredRole("admin")
   public String tambahLomba(@Valid Lomba lomba, BindingResult result, Model model) {
+    // if (result.hasErrors()) {
+    //   model.addAttribute("userRole", "admin");
+    //   return "lomba-tambah";
+    // }
+    // lombaService.addLomba(lomba);
+    // model.addAttribute("userRole", "admin");
+    // return "redirect:/admin/lomba";
+    if (lomba.getTanggalMulai() != null && lomba.getTanggalSelesai() != null) {
+      if (!lomba.getTanggalMulai().isBefore(lomba.getTanggalSelesai())) {
+          result.rejectValue("tanggalMulai", "error.lomba", "Tanggal Mulai harus sebelum Tanggal Selesai.");
+          model.addAttribute("tanggalError", "Tanggal Mulai harus sebelum Tanggal Selesai.");
+      }
+    }
     if (result.hasErrors()) {
       model.addAttribute("userRole", "admin");
       return "lomba-tambah";
