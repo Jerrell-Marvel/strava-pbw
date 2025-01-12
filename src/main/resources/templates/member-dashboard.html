@@ -54,10 +54,6 @@
       }
 
       const ctx = document.getElementById("aktivitasChart").getContext("2d");
-      //biar gk blur
-      canvas.width = canvas.clientWidth * window.devicePixelRatio;
-      canvas.height = canvas.clientHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
       let aktivitasChart;
 
       // Helper Functions
@@ -343,29 +339,46 @@
       document
         .getElementById("downloadPdfBtn")
         .addEventListener("click", function () {
-          html2canvas(document.getElementById("aktivitasChart"), {
-            scale: 1, // Increase resolution by scaling
-            useCORS: true, // Ensures compatibility with external resources
-            //force biar 1920x1080
-            width: 1920,
-            height: 1080,
-          }).then(function (canvas) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-              orientation: "landscape",
-              unit: "px",
-              format: [1920, 1080],
-            });
+          const canvas = document.getElementById("aktivitasChart");
 
-            // Calculate dimensions for a sharp PDF image
-            //const imgWidth = 180; // Width in mm (standard A4 PDF width is ~210mm)
-            //const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+          // Pastikan elemen adalah canvas
+          if (canvas.tagName !== "CANVAS") {
+            alert("Elemen bukan canvas");
+            return;
+          }
 
-            const imgData = canvas.toDataURL("image/png");
-            doc.addImage(imgData, "PNG", 0, 0, 1920, 1080);
-            doc.save("aktivitas_chart.pdf");
+          const { jsPDF } = window.jspdf;
+          const imgData = canvas.toDataURL("image/png"); // Ambil data gambar dari canvas
+
+          const doc = new jsPDF({
+            orientation: "landscape",
+            unit: "px",
+            format: [canvas.width, canvas.height], // Gunakan dimensi canvas
           });
+
+          doc.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+          doc.save("aktivitas_chart.pdf");
         });
+
+      // document
+      //   .getElementById("downloadPdfBtn")
+      //   .addEventListener("click", function () {
+      //     html2canvas(document.getElementById("aktivitasChart"), {
+      //       scale: 2, // Increase resolution by scaling
+      //       useCORS: true, // Ensures compatibility with external resources
+      //     }).then(function (canvas) {
+      //       const { jsPDF } = window.jspdf;
+      //       const doc = new jsPDF();
+
+      //       // Calculate dimensions for a sharp PDF image
+      //       const imgWidth = 180; // Width in mm (standard A4 PDF width is ~210mm)
+      //       const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+
+      //       const imgData = canvas.toDataURL("image/png");
+      //       doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+      //       doc.save("aktivitas_chart.pdf");
+      //     });
+      //   });
 
       // const viewSelector = document.getElementById("viewSelector");
       // const viewText = document.getElementById("viewText");

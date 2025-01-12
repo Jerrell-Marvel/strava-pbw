@@ -51,7 +51,7 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
     String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
         "a.jarak_tempuh, a.satuan_jarak, a.id_user " +
         "FROM aktivitas a "
-        + "WHERE a.id_user = ? AND a.is_active = true ORDER BY a.tanggal_aktivitas DESC, a.id_aktivitas DESC LIMIT 10 OFFSET ?";
+        + "WHERE a.id_user = ? AND a.is_active = true ORDER BY a.id_aktivitas DESC LIMIT 10 OFFSET ?";
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser, offset);
   }
 

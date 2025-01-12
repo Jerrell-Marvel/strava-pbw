@@ -23,7 +23,7 @@ public class JdbcLombaRepository implements LombaRepository {
   }
 
   public List<Lomba> findLombaByPage(int offset, int pageSize) {
-    String sql = "SELECT * FROM Lomba LIMIT ? OFFSET ?";
+    String sql = "SELECT * FROM Lomba ORDER BY Lomba.id_lomba DESC LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, this::mapRowToLomba, pageSize, offset);
   }
 
@@ -116,7 +116,7 @@ public class JdbcLombaRepository implements LombaRepository {
     String sql = """
             SELECT * FROM Lomba
             WHERE CURRENT_DATE BETWEEN tanggal_mulai AND tanggal_selesai
-            ORDER BY Lomba.tanggal_mulai DESC, Lomba.id_lomba DESC
+            ORDER BY Lomba.id_lomba DESC
             LIMIT ? OFFSET ?
         """;
     return jdbcTemplate.query(sql, this::mapRowToLomba, pageSize, offset);
@@ -139,7 +139,7 @@ public class JdbcLombaRepository implements LombaRepository {
             WHERE a.id_user = ?
               AND lm.id_aktivitas IS NULL
               AND a.tanggal_aktivitas BETWEEN l.tanggal_mulai AND l.tanggal_selesai
-            ORDER BY a.tanggal_aktivitas DESC, a.id_aktivitas DESC
+            ORDER BY a.id_aktivitas DESC
             LIMIT 10 OFFSET ?
         """;
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idLomba, idUser, offset);
@@ -173,7 +173,7 @@ public class JdbcLombaRepository implements LombaRepository {
             JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba
             JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
             WHERE lm.id_user = ?
-            ORDER BY l.tanggal_mulai DESC, l.id_lomba DESC
+            ORDER BY l.id_lomba DESC
             LIMIT 10 OFFSET ?
         """;
     return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaMember(
@@ -202,7 +202,7 @@ public class JdbcLombaRepository implements LombaRepository {
         FROM Lomba l
         LEFT JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba AND lm.id_user = ?
         WHERE CURRENT_DATE BETWEEN l.tanggal_mulai AND l.tanggal_selesai
-        ORDER BY l.tanggal_mulai DESC, status_mengikuti DESC, l.id_lomba DESC
+        ORDER BY l.id_lomba DESC
         LIMIT ? OFFSET ?;
                 """;
     return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaBerlangsung(
