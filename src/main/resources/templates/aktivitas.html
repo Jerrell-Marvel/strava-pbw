@@ -19,6 +19,44 @@
         >
       </header>
       <main class="pt-5">
+        <section class="mt-5">
+          <!-- Tombol untuk membuka pop-up -->
+            <button
+            id="openFilterButton"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+            onclick="
+              const modal = document.getElementById('filterModal');
+              modal.classList.remove('hidden'); // Tampilkan modal
+            "
+          >
+            Filter Aktivitas
+          </button>
+
+          <!-- Modal Pop-Up -->
+          <section
+            id="filterModal"
+            class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
+          >
+            <div class="bg-white p-6 rounded shadow-lg w-3/4 h-3/4 relative overflow-y-auto">
+              <!-- Tombol untuk menutup modal -->
+              <button
+                class="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                onclick="
+                  const modal = document.getElementById('filterModal');
+                  modal.classList.add('hidden'); // Sembunyikan modal
+                "
+              >
+                &times;
+              </button>
+              <!-- Iframe untuk memuat isi pop-up -->
+              <iframe
+                src="/aktivitas/filter-form"
+                class="w-full h-full border-none"
+                title="Filter Aktivitas"
+              ></iframe>
+            </div>
+          </section>
+        </section>        
         <section>
           <table class="table-auto w-full text-base">
             <thead class="text-base uppercase bg-gray-100">
@@ -33,7 +71,9 @@
                 <th></th>
               </tr>
             </thead>
-            <tbody class="text-center">
+
+            <tbody class="text-center" id="aktivitasTable">
+              <!-- Iterasi Aktivitas -->
               <tr
                 th:each="aktivitas, iterStat : ${aktivitasList}"
                 class="even:bg-gray-100"
@@ -43,7 +83,8 @@
                   class="py-4"
                 ></td>
 
-                <td th:text="${aktivitas.tanggalAktivitas}"></td>
+                <td th:text="${aktivitas.tanggalAktivitas}" class="py-4"></td>
+
                 <td>
                   <a
                     th:href="@{/aktivitas/detail/{id}(id=${aktivitas.idAktivitas})}"
@@ -51,29 +92,40 @@
                     class="text-blue-500 hover:text-blue-300"
                   ></a>
                 </td>
-                <td th:text="${aktivitas.formattedWaktuTempuh}"></td>
-                <td th:text="${aktivitas.jarakTempuh}"></td>
-                <td th:text="${aktivitas.satuanJarak}"></td>
+
+                <td th:text="${aktivitas.formattedWaktuTempuh}" class="py-4"></td>
+
+                <td th:text="${aktivitas.jarakTempuh}" class="py-4"></td>
+
+                <td th:text="${aktivitas.satuanJarak}" class="py-4"></td>
+
                 <td>
                   <a
                     th:href="@{/aktivitas/edit/{id}(id=${aktivitas.idAktivitas})}"
                     class="btn btn-primary text-blue-500 hover:text-blue-300"
-                    >Edit</a
                   >
+                    Edit
+                  </a>
                 </td>
+
                 <td>
                   <a
                     th:href="@{/aktivitas/hapus/{id}(id=${aktivitas.idAktivitas})}"
                     onclick="return confirm('Apakah Anda yakin ingin menghapus aktivitas ini?');"
                     class="btn btn-danger text-red-500 hover:text-red-300"
-                    >Hapus</a
                   >
+                    Hapus
+                  </a>
                 </td>
               </tr>
+
+              <!-- Baris Jika Tidak Ada Data -->
               <tr th:if="${aktivitasList.isEmpty()}">
-                <td colspan="8">Tidak ada aktivitas.</td>
+                <td colspan="8" class="py-4">Tidak ada aktivitas.</td>
               </tr>
             </tbody>
+
+
           </table>
         </section>
 
@@ -118,5 +170,46 @@
         <!-- Pagination end -->
       </main>
     </div>
+     <!-- Inline JavaScript -->
+    <script>
+      // Fungsi untuk menerima pesan dari iframe
+      window.addEventListener("message", function (event) {
+        // Data filter dari iframe
+        const filterData = event.data;
+
+        // Ambil semua baris tabel
+        const rows = document.querySelectorAll("#aktivitasTable tr");
+        let visibleRowNumber = 1; // Mulai nomor urut dari 1
+
+        // Iterasi setiap baris tabel
+        rows.forEach((row) => {
+          const tanggal = row.cells[1]?.textContent || ""; // Kolom tanggal
+          const jarak = parseFloat(row.cells[4]?.textContent.trim()) || 0; // Kolom jarak tempuh (perbaikan: gunakan .trim() untuk menghindari spasi tak terlihat)
+
+          // Konversi tanggal menjadi format yang dapat dibandingkan
+          const rowDate = tanggal ? new Date(tanggal) : null;
+          const filterStartDate = filterData.startDate ? new Date(filterData.startDate) : null;
+          const filterEndDate = filterData.endDate ? new Date(filterData.endDate) : null;
+
+          // Filter berdasarkan tanggal
+          const isDateInRange =
+            (!filterStartDate || (rowDate && rowDate >= filterStartDate)) &&
+            (!filterEndDate || (rowDate && rowDate <= filterEndDate));
+
+          // Filter berdasarkan jarak
+          const minDistance = parseFloat(filterData.minDistance) || 0;
+          const maxDistance = parseFloat(filterData.maxDistance) || Infinity;
+          const isDistanceInRange = jarak >= minDistance && jarak <= maxDistance;
+
+          // Tampilkan atau sembunyikan baris berdasarkan filter
+          if (isDateInRange && isDistanceInRange) {
+            row.style.display = ""; // Tampilkan
+            row.cells[0].textContent = visibleRowNumber++; // Update nomor urut
+          } else {
+            row.style.display = "none"; // Sembunyikan
+          }
+        });
+      });
+    </script>
   </body>
 </html>

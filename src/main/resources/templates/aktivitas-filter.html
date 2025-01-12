@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search and Filter Aktivitas</title>
+    <link href="/css/output.css" rel="stylesheet" />
+  </head>
+  <body class="flex justify-center items-center h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded shadow-lg w-1/3">
+      <h2 class="text-2xl font-bold mb-4">Search and Filter Aktivitas</h2>
+      <form id="filterForm">
+        <div class="mb-4">
+          <label for="startDate" class="block text-sm font-medium">Tanggal Mulai:</label>
+          <input type="date" id="startDate" class="w-full p-2 border border-gray-300 rounded" />
+        </div>
+        <div class="mb-4">
+          <label for="endDate" class="block text-sm font-medium">Tanggal Selesai:</label>
+          <input type="date" id="endDate" class="w-full p-2 border border-gray-300 rounded" />
+        </div>
+        <div class="mb-4">
+          <label for="minDistance" class="block text-sm font-medium">Jarak Minimal:</label>
+          <input type="number" id="minDistance" class="w-full p-2 border border-gray-300 rounded" />
+        </div>
+        <div class="mb-4">
+          <label for="maxDistance" class="block text-sm font-medium">Jarak Maksimal:</label>
+          <input type="number" id="maxDistance" class="w-full p-2 border border-gray-300 rounded" />
+        </div>
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+            onclick="
+              // Kirim data filter ke halaman utama
+              window.parent.postMessage(
+                {
+                  startDate: document.getElementById('startDate').value,
+                  endDate: document.getElementById('endDate').value,
+                  minDistance: parseFloat(document.getElementById('minDistance').value) || 0,
+                  maxDistance: parseFloat(document.getElementById('maxDistance').value) || Infinity,
+                },
+                '*'
+              );
+            "
+          >
+            Cari
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
