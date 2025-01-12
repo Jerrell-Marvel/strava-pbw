@@ -295,4 +295,12 @@ public class AktivitasController {
     model.addAttribute("userRole", "member");
     return "detail-aktivitas";
   }
+
+  @GetMapping("/aktivitas/filter-form")
+  public String getFilterForm() {
+      return "aktivitas-filter"; // Nama file tanpa ekstensi .html
+  }
+
+  
+
 }
