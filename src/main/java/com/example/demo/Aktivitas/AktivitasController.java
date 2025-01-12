@@ -5,9 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.Principal;
+//import java.security.Principal;
 import java.time.Duration;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +52,7 @@ public class AktivitasController {
       @RequestParam(defaultValue = "0") int jam,
       @RequestParam(defaultValue = "0") int menit,
       @RequestParam(defaultValue = "0") int detik,
+      @RequestParam String satuanJarak, //parameter buat ngitung satuan jarak
       @RequestParam("foto") MultipartFile[] foto,
       HttpSession session, Model model) {
     if (result.hasErrors()) {
@@ -64,6 +65,27 @@ public class AktivitasController {
     waktuTempuh = waktuTempuh.minusHours(7);
     aktivitas.setWaktuTempuh(waktuTempuh);
 
+    // Konversi jarak ke meter
+    double jarakDiMeter = aktivitas.getJarakTempuh();
+    switch (satuanJarak.toLowerCase()) {
+      case "km":
+        jarakDiMeter *= 1000;
+        break;
+      case "mil":
+        jarakDiMeter *= 1609.34;
+      case "m":
+      default:
+        break;
+    }
+
+    // Validasi jarak tempuh
+    if (jarakDiMeter > 42195) {
+      result.rejectValue("jarakTempuh", "error.jarakTempuh","Jarak yang dimasukan terlalu panjang (maks 42.196 meter)");
+      model.addAttribute("userRole", "member");
+      return "tambah-aktivitas";
+    }
+
+    aktivitas.setJarakTempuh(jarakDiMeter);
     aktivitas.setIdUser((Integer) session.getAttribute("idUser"));
 
     // aktivitas.setUrlFoto(new ArrayList<>());

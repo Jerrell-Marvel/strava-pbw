@@ -92,9 +92,10 @@
             step="0.01"
             required
             class="input block w-full"
-            min="0"
-            max="42195"
           />
+          <div th:if="${#fields.hasErrors('jarakTempuh')}" class="text-red-500">
+            <p th:errors="*{jarakTempuh}"></p>
+          </div>
         </div>
         <div>
           <label for="satuanJarak" class="text-lg">Satuan Jarak:</label>
