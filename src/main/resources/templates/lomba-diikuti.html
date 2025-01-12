@@ -10,6 +10,25 @@
     <div class="w-2/3 pt-28">
       <header class="mb-6">
         <h1 class="text-4xl font-semibold">Lomba yang Diikuti</h1>
+        <form
+          method="get"
+          action="/member/lomba/diikuti"
+          class="flex items-center mt-4"
+        >
+          <input
+            type="text"
+            name="search"
+            th:value="${search}"
+            placeholder="Cari nama lomba"
+            class="border px-2 py-1"
+          />
+          <button
+            type="submit"
+            class="text-base font-semibold text-white bg-orange-500 px-3 py-1 hover:bg-orange-300"
+          >
+            Cari
+          </button>
+        </form>
       </header>
       <main>
         <table class="table-auto w-full text-base">
@@ -59,13 +78,12 @@
           </tbody>
         </table>
 
-        <!-- Pagination start -->
         <nav th:if="${pageCount > 1}" class="flex justify-end">
           <ul class="pagination-container flex text-lg">
             <!-- Previous Button -->
             <li class="prev-btn">
               <a
-                th:href="@{/member/lomba/diikuti(page=${currentPage} - 1)}"
+                th:href="@{/member/lomba/diikuti(page=${currentPage} - 1, search=${search})}"
                 aria-label="Previous"
                 th:class="${currentPage}==1 ? 'disabled' : null"
               >
@@ -79,7 +97,7 @@
               class="pagination-link"
             >
               <a
-                th:href="@{/member/lomba/diikuti(page=${i})}"
+                th:href="@{/member/lomba/diikuti(page=${i}, search=${search})}"
                 th:text="${i}"
                 th:class="${currentPage}==${i} ? 'disabled' : null"
               ></a>
@@ -88,7 +106,7 @@
             <!-- Next Button -->
             <li class="next-btn">
               <a
-                th:href="@{/member/lomba/diikuti(page=${currentPage} + 1)}"
+                th:href="@{/member/lomba/diikuti(page=${currentPage} + 1, search=${search})}"
                 aria-label="Next"
                 th:class="${currentPage}==${pageCount} ? 'disabled' : null"
               >
@@ -97,7 +115,6 @@
             </li>
           </ul>
         </nav>
-        <!-- Pagination end -->
       </main>
     </div>
   </body>

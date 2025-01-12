@@ -79,4 +79,31 @@ public class LombaService {
     return lombaRepository.getLombaBerlangsungWithStatusCount();
   }
 
+  public List<Lomba> getLombaBySearch(String search, int page, int pageSize) {
+    int offset = (page - 1) * pageSize;
+    return lombaRepository.findLombaBySearch(search, offset, pageSize);
+  }
+
+  public int getLombaCount(String search) {
+    return lombaRepository.getLombaCount(search);
+  }
+
+  public List<LombaBerlangsung> getLombaBerlangsungWithSearch(Integer idUser, String search, int page, int pageSize) {
+    int offset = (page - 1) * pageSize;
+    return lombaRepository.findLombaBerlangsungWithSearch(idUser, search, offset, pageSize);
+  }
+
+  public int getLombaBerlangsungWithSearchCount(Integer idUser, String search) {
+    return lombaRepository.getLombaBerlangsungWithSearchCount(idUser, search);
+  }
+
+  public List<LombaMember> getLombaDiikutiWithSearch(Integer idUser, String search, int page, int pageSize) {
+    int offset = (page - 1) * pageSize;
+    return lombaRepository.findLombaDiikutiWithSearch(idUser, search, offset, pageSize);
+  }
+
+  public int getLombaDiikutiWithSearchCount(Integer idUser, String search) {
+    return lombaRepository.getLombaDiikutiWithSearchCount(idUser, search);
+  }
+
 }

@@ -34,4 +34,17 @@ public interface LombaRepository {
   List<LombaBerlangsung> findLombaBerlangsungWithStatus(Integer idUser, int offset, int pageSize);
 
   int getLombaBerlangsungWithStatusCount();
+
+  List<Lomba> findLombaBySearch(String search, int offset, int pageSize);
+
+  int getLombaCount(String search);
+
+  List<LombaBerlangsung> findLombaBerlangsungWithSearch(Integer idUser, String search, int offset,
+      int pageSize);
+
+  int getLombaBerlangsungWithSearchCount(Integer idUser, String search);
+
+  List<LombaMember> findLombaDiikutiWithSearch(Integer idUser, String search, int offset, int pageSize);
+
+  int getLombaDiikutiWithSearchCount(Integer idUser, String search);
 }

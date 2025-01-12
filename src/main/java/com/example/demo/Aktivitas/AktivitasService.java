@@ -31,6 +31,14 @@ public class AktivitasService {
     return aktivitasRepository.findAktivitasByUserId(userId);
   }
 
+  public List<Aktivitas> getAktivitasByUserId(Integer userId, String search, Integer page) {
+    return aktivitasRepository.findAktivitasByUserId(userId, search, page);
+  }
+
+  public int getAktivitasCount(Integer idUser, String search) {
+    return aktivitasRepository.getAktivitasCount(idUser, search);
+  }
+
   public Aktivitas getAktivitasById(Integer idAktivitas, Integer idUser) {
     return aktivitasRepository.getAktivitasById(idAktivitas, idUser);
   }

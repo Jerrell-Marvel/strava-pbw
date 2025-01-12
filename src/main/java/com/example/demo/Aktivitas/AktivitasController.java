@@ -105,11 +105,13 @@ public class AktivitasController {
   @GetMapping("/aktivitas")
   @RequiredRole("member")
   public String getAktivitas(
-      @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage, // Ubah ke int
+      @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
+      @RequestParam(name = "search", required = false) String search,
       Model model,
       HttpSession session) {
+
     Integer idUser = (Integer) session.getAttribute("idUser");
-    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser, currentPage);
+    List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser, search, currentPage);
 
     aktivitasList.forEach(aktivitas -> {
       if (aktivitas.getWaktuTempuh() != null) {
@@ -118,22 +120,56 @@ public class AktivitasController {
         long seconds = aktivitas.getWaktuTempuh().getSeconds() % 60;
         String formatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
         aktivitas.setFormattedWaktuTempuh(formatted);
-        System.out.println("Formatted Waktu Tempuh: " + formatted); // Debug log
-      } else {
-        System.out.println("Waktu Tempuh is null for Aktivitas ID: " + aktivitas.getIdAktivitas());
       }
     });
 
     // Pagination
-    int rowCount = aktivitasService.getAktivitasCount(idUser);
+    int rowCount = aktivitasService.getAktivitasCount(idUser, search);
     int pageCount = (int) Math.ceil((double) rowCount / 10);
     model.addAttribute("pageCount", pageCount);
-    model.addAttribute("currentPage", currentPage); // Tetap tambahkan currentPage sebagai model
-
+    model.addAttribute("currentPage", currentPage);
     model.addAttribute("aktivitasList", aktivitasList);
+    model.addAttribute("search", search); // Tambahkan nilai pencarian ke model
     model.addAttribute("userRole", "member");
     return "aktivitas";
   }
+
+  // @GetMapping("/aktivitas")
+  // @RequiredRole("member")
+  // public String getAktivitas(
+  // @RequestParam(name = "page", required = false, defaultValue = "1") int
+  // currentPage, // Ubah ke int
+  // Model model,
+  // HttpSession session) {
+  // Integer idUser = (Integer) session.getAttribute("idUser");
+  // List<Aktivitas> aktivitasList = aktivitasService.getAktivitasByUserId(idUser,
+  // currentPage);
+
+  // aktivitasList.forEach(aktivitas -> {
+  // if (aktivitas.getWaktuTempuh() != null) {
+  // long hours = aktivitas.getWaktuTempuh().toHours();
+  // long minutes = aktivitas.getWaktuTempuh().toMinutes() % 60;
+  // long seconds = aktivitas.getWaktuTempuh().getSeconds() % 60;
+  // String formatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+  // aktivitas.setFormattedWaktuTempuh(formatted);
+  // System.out.println("Formatted Waktu Tempuh: " + formatted); // Debug log
+  // } else {
+  // System.out.println("Waktu Tempuh is null for Aktivitas ID: " +
+  // aktivitas.getIdAktivitas());
+  // }
+  // });
+
+  // // Pagination
+  // int rowCount = aktivitasService.getAktivitasCount(idUser);
+  // int pageCount = (int) Math.ceil((double) rowCount / 10);
+  // model.addAttribute("pageCount", pageCount);
+  // model.addAttribute("currentPage", currentPage); // Tetap tambahkan
+  // currentPage sebagai model
+
+  // model.addAttribute("aktivitasList", aktivitasList);
+  // model.addAttribute("userRole", "member");
+  // return "aktivitas";
+  // }
 
   @GetMapping("/member/dashboard")
   @RequiredRole("member")

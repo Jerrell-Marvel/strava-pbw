@@ -27,15 +27,18 @@ public class LombaController {
   @RequiredRole("admin")
   public String getLombaList(
       @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+      @RequestParam(name = "search", required = false, defaultValue = "") String search,
       Model model) {
+
     int pageSize = 10;
-    List<Lomba> lombaList = lombaService.getLombaByPage(page, pageSize);
-    int totalLomba = lombaService.getLombaCount();
+    List<Lomba> lombaList = lombaService.getLombaBySearch(search, page, pageSize);
+    int totalLomba = lombaService.getLombaCount(search);
     int pageCount = (int) Math.ceil((double) totalLomba / pageSize);
 
     model.addAttribute("lombaList", lombaList);
     model.addAttribute("currentPage", page);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("search", search); // Tambahkan search ke model
     model.addAttribute("userRole", "admin");
 
     return "lomba-list";
@@ -69,16 +72,16 @@ public class LombaController {
   @RequiredRole("admin")
   public String tambahLomba(@Valid Lomba lomba, BindingResult result, Model model) {
     // if (result.hasErrors()) {
-    //   model.addAttribute("userRole", "admin");
-    //   return "lomba-tambah";
+    // model.addAttribute("userRole", "admin");
+    // return "lomba-tambah";
     // }
     // lombaService.addLomba(lomba);
     // model.addAttribute("userRole", "admin");
     // return "redirect:/admin/lomba";
     if (lomba.getTanggalMulai() != null && lomba.getTanggalSelesai() != null) {
       if (!lomba.getTanggalMulai().isBefore(lomba.getTanggalSelesai())) {
-          result.rejectValue("tanggalMulai", "error.lomba", "Tanggal Mulai harus sebelum Tanggal Selesai.");
-          model.addAttribute("tanggalError", "Tanggal Mulai harus sebelum Tanggal Selesai.");
+        result.rejectValue("tanggalMulai", "error.lomba", "Tanggal Mulai harus sebelum Tanggal Selesai.");
+        model.addAttribute("tanggalError", "Tanggal Mulai harus sebelum Tanggal Selesai.");
       }
     }
     if (result.hasErrors()) {
@@ -94,18 +97,21 @@ public class LombaController {
   @RequiredRole("member")
   public String getLombaBerlangsung(
       @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+      @RequestParam(name = "search", required = false, defaultValue = "") String search,
       Model model,
       HttpSession session) {
+
     Integer idUser = (Integer) session.getAttribute("idUser");
     int pageSize = 10;
 
-    List<LombaBerlangsung> lombaList = lombaService.getLombaBerlangsungWithStatus(idUser, page, pageSize);
-    int totalLomba = lombaService.getLombaBerlangsungWithStatusCount();
+    List<LombaBerlangsung> lombaList = lombaService.getLombaBerlangsungWithSearch(idUser, search, page, pageSize);
+    int totalLomba = lombaService.getLombaBerlangsungWithSearchCount(idUser, search);
     int pageCount = (int) Math.ceil((double) totalLomba / pageSize);
 
     model.addAttribute("lombaList", lombaList);
     model.addAttribute("currentPage", page);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("search", search); // Tambahkan search ke model
     model.addAttribute("userRole", "member");
 
     return "lomba-berlangsung";
@@ -160,20 +166,25 @@ public class LombaController {
 
   @GetMapping("/member/lomba/diikuti")
   @RequiredRole("member")
-  public String lombaDiikuti(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-      Model model, HttpSession session) {
+  public String lombaDiikuti(
+      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+      @RequestParam(name = "search", required = false, defaultValue = "") String search,
+      Model model,
+      HttpSession session) {
+
     Integer idUser = (Integer) session.getAttribute("idUser");
-    List<LombaMember> lombaDiikuti = lombaService.getLombaDiikuti(idUser, page);
+    int pageSize = 10;
+
+    List<LombaMember> lombaDiikuti = lombaService.getLombaDiikutiWithSearch(idUser, search, page, pageSize);
+    int totalLomba = lombaService.getLombaDiikutiWithSearchCount(idUser, search);
+    int pageCount = (int) Math.ceil((double) totalLomba / pageSize);
+
     model.addAttribute("lombaDiikuti", lombaDiikuti);
-
-    int totalLomba = lombaService.getLombaDiikutiCount(idUser);
-    int pageCount = (int) Math.ceil((double) totalLomba / 10);
-
     model.addAttribute("currentPage", page);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("search", search); // Tambahkan search ke model
     model.addAttribute("userRole", "member");
 
-    System.out.println("lorem " + pageCount);
     return "lomba-diikuti";
   }
 

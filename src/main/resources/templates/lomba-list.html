@@ -11,6 +11,21 @@
     <div class="w-2/3 pt-28">
       <header class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-semibold">Daftar Lomba</h1>
+        <form method="get" action="/admin/lomba" class="flex items-center">
+          <input
+            type="text"
+            name="search"
+            th:value="${search}"
+            placeholder="Cari nama lomba"
+            class="border px-2 py-1"
+          />
+          <button
+            type="submit"
+            class="text-base font-semibold text-white bg-orange-500 px-3 py-1 hover:bg-orange-300"
+          >
+            Cari
+          </button>
+        </form>
         <a href="/admin/lomba/tambah" class="primary-btn"
           >+ Tambah Lomba Baru</a
         >
@@ -63,7 +78,7 @@
             <!-- Previous Button -->
             <li class="prev-btn">
               <a
-                th:href="@{/admin/lomba(page=${currentPage} - 1)}"
+                th:href="@{/admin/lomba(page=${currentPage} - 1, search=${search})}"
                 aria-label="Previous"
                 th:class="${currentPage}==1 ? 'disabled' : null"
               >
@@ -77,7 +92,7 @@
               class="pagination-link"
             >
               <a
-                th:href="@{/admin/lomba(page=${i})}"
+                th:href="@{/admin/lomba(page=${i}, search=${search})}"
                 th:text="${i}"
                 th:class="${currentPage}==${i} ? 'disabled' : null"
               ></a>
@@ -86,7 +101,7 @@
             <!-- Next Button -->
             <li class="next-btn">
               <a
-                th:href="@{/admin/lomba(page=${currentPage} + 1)}"
+                th:href="@{/admin/lomba(page=${currentPage} + 1, search=${search})}"
                 aria-label="Next"
                 th:class="${currentPage}==${pageCount} ? 'disabled' : null"
               >
@@ -95,6 +110,7 @@
             </li>
           </ul>
         </nav>
+
         <!-- Pagination end -->
       </main>
     </div>

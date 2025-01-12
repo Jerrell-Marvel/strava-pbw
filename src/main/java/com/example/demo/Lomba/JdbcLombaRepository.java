@@ -223,6 +223,95 @@ public class JdbcLombaRepository implements LombaRepository {
     return jdbcTemplate.queryForObject(sql, Integer.class);
   }
 
+  @Override
+  public List<Lomba> findLombaBySearch(String search, int offset, int pageSize) {
+    String sql = """
+            SELECT * FROM Lomba
+            WHERE LOWER(nama_lomba) LIKE LOWER(?)
+            ORDER BY id_lomba DESC LIMIT ? OFFSET ?
+        """;
+    return jdbcTemplate.query(sql, this::mapRowToLomba, "%" + search + "%", pageSize, offset);
+  }
+
+  @Override
+  public int getLombaCount(String search) {
+    String sql = """
+            SELECT COUNT(*) FROM Lomba
+            WHERE LOWER(nama_lomba) LIKE LOWER(?)
+        """;
+    return jdbcTemplate.queryForObject(sql, Integer.class, "%" + search + "%");
+  }
+
+  @Override
+  public List<LombaBerlangsung> findLombaBerlangsungWithSearch(Integer idUser, String search, int offset,
+      int pageSize) {
+    String sql = """
+            SELECT l.id_lomba, l.nama_lomba, l.deskripsi_lomba, l.tanggal_mulai, l.tanggal_selesai,
+                   CASE WHEN lm.id_user IS NOT NULL THEN TRUE ELSE FALSE END AS status_mengikuti
+            FROM Lomba l
+            LEFT JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba AND lm.id_user = ?
+            WHERE CURRENT_DATE BETWEEN l.tanggal_mulai AND l.tanggal_selesai
+              AND LOWER(l.nama_lomba) LIKE LOWER(?)
+            ORDER BY l.id_lomba DESC
+            LIMIT ? OFFSET ?
+        """;
+    return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaBerlangsung(
+        rs.getInt("id_lomba"),
+        rs.getString("nama_lomba"),
+        rs.getString("deskripsi_lomba"),
+        rs.getDate("tanggal_mulai").toLocalDate(),
+        rs.getDate("tanggal_selesai").toLocalDate(),
+        rs.getBoolean("status_mengikuti")), idUser, "%" + search + "%", pageSize, offset);
+  }
+
+  @Override
+  public int getLombaBerlangsungWithSearchCount(Integer idUser, String search) {
+    String sql = """
+            SELECT COUNT(*)
+            FROM Lomba l
+            LEFT JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba AND lm.id_user = ?
+            WHERE CURRENT_DATE BETWEEN l.tanggal_mulai AND l.tanggal_selesai
+              AND LOWER(l.nama_lomba) LIKE LOWER(?)
+        """;
+    return jdbcTemplate.queryForObject(sql, Integer.class, idUser, "%" + search + "%");
+  }
+
+  @Override
+  public List<LombaMember> findLombaDiikutiWithSearch(Integer idUser, String search, int offset, int pageSize) {
+    String sql = """
+            SELECT l.id_lomba, l.nama_lomba, l.deskripsi_lomba,
+                   lm.id_aktivitas, a.judul, l.tanggal_mulai, l.tanggal_selesai
+            FROM Lomba l
+            JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba
+            JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
+            WHERE lm.id_user = ?
+              AND LOWER(l.nama_lomba) LIKE LOWER(?)
+            ORDER BY l.id_lomba DESC
+            LIMIT ? OFFSET ?
+        """;
+    return jdbcTemplate.query(sql, (rs, rowNum) -> new LombaMember(
+        rs.getInt("id_lomba"),
+        rs.getString("nama_lomba"),
+        rs.getString("deskripsi_lomba"),
+        rs.getInt("id_aktivitas"),
+        rs.getString("judul"),
+        rs.getDate("tanggal_mulai").toLocalDate(),
+        rs.getDate("tanggal_selesai").toLocalDate()), idUser, "%" + search + "%", pageSize, offset);
+  }
+
+  @Override
+  public int getLombaDiikutiWithSearchCount(Integer idUser, String search) {
+    String sql = """
+            SELECT COUNT(*)
+            FROM Lomba l
+            JOIN Lomba_Member lm ON l.id_lomba = lm.id_lomba
+            JOIN Aktivitas a ON lm.id_aktivitas = a.id_aktivitas
+            WHERE lm.id_user = ?
+              AND LOWER(l.nama_lomba) LIKE LOWER(?)
+        """;
+    return jdbcTemplate.queryForObject(sql, Integer.class, idUser, "%" + search + "%");
+  }
+
   private Aktivitas mapRowToAktivitas(ResultSet resultSet, int rowNum) throws SQLException {
     return new Aktivitas(
         resultSet.getInt("id_aktivitas"),

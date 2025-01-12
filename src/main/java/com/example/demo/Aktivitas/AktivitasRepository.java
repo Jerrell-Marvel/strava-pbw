@@ -23,4 +23,8 @@ public interface AktivitasRepository {
 
   int getAktivitasCount(Integer idUser);
 
+  List<Aktivitas> findAktivitasByUserId(Integer idUser, String search, Integer page);
+
+  int getAktivitasCount(Integer idUser, String search);
+
 }

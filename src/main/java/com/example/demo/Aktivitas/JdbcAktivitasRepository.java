@@ -143,4 +143,28 @@ public class JdbcAktivitasRepository implements AktivitasRepository {
     return jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser);
   }
 
+  @Override
+  public List<Aktivitas> findAktivitasByUserId(Integer idUser, String search, Integer page) {
+    int offset = (page - 1) * 10;
+    String sql = "SELECT a.id_aktivitas, a.tanggal_aktivitas, a.judul, a.deskripsi, a.waktu_tempuh, " +
+        "a.jarak_tempuh, a.satuan_jarak, a.id_user " +
+        "FROM aktivitas a " +
+        "WHERE a.id_user = ? AND a.is_active = true " +
+        (search != null && !search.isEmpty() ? "AND LOWER(a.judul) LIKE LOWER(?) " : "") +
+        "ORDER BY a.id_aktivitas DESC LIMIT 10 OFFSET ?";
+    return search != null && !search.isEmpty()
+        ? jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser, "%" + search + "%", offset)
+        : jdbcTemplate.query(sql, this::mapRowToAktivitas, idUser, offset);
+  }
+
+  @Override
+  public int getAktivitasCount(Integer idUser, String search) {
+    String sql = "SELECT COUNT(*) FROM aktivitas " +
+        "WHERE id_user = ? AND is_active = TRUE " +
+        (search != null && !search.isEmpty() ? "AND LOWER(judul) LIKE LOWER(?)" : "");
+    return search != null && !search.isEmpty()
+        ? jdbcTemplate.queryForObject(sql, Integer.class, idUser, "%" + search + "%")
+        : jdbcTemplate.queryForObject(sql, Integer.class, idUser);
+  }
+
 }

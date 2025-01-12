@@ -12,6 +12,21 @@
     <div class="w-2/3 pt-28">
       <header class="justify-between w-full flex">
         <h1 class="text-4xl font-semibold">Daftar Aktivitas</h1>
+        <form method="get" action="/aktivitas" class="flex items-center">
+          <input
+            type="text"
+            name="search"
+            th:value="${search}"
+            placeholder="Cari judul aktivitas"
+            class="border px-2 py-1"
+          />
+          <button
+            type="submit"
+            class="text-base font-semibold text-white bg-orange-500 px-3 py-1 hover:bg-orange-300"
+          >
+            Cari
+          </button>
+        </form>
         <a
           class="text-base font-semibold text-white bg-orange-500 px-3 py-2 hover:bg-orange-300"
           href="/aktivitas/tambah"
@@ -77,13 +92,12 @@
           </table>
         </section>
 
-        <!-- Pagination start -->
         <nav th:if="${pageCount > 1}" class="flex justify-end">
           <ul class="pagination-container flex text-lg">
             <!-- Previous Button -->
             <li class="prev-btn">
               <a
-                th:href="@{/aktivitas(page=${currentPage} - 1)}"
+                th:href="@{/aktivitas(page=${currentPage - 1}, search=${search})}"
                 aria-label="Previous"
                 th:class="${currentPage}==1 ? 'disabled' : null"
               >
@@ -97,7 +111,7 @@
               class="pagination-link"
             >
               <a
-                th:href="@{/aktivitas(page=${i})}"
+                th:href="@{/aktivitas(page=${i}, search=${search})}"
                 th:text="${i}"
                 th:class="${currentPage}==${i} ? 'disabled' : null"
               ></a>
@@ -106,7 +120,7 @@
             <!-- Next Button -->
             <li class="next-btn">
               <a
-                th:href="@{/aktivitas(page=${currentPage} + 1)}"
+                th:href="@{/aktivitas(page=${currentPage + 1}, search=${search})}"
                 aria-label="Next"
                 th:class="${currentPage}==${pageCount} ? 'disabled' : null"
               >
@@ -115,7 +129,6 @@
             </li>
           </ul>
         </nav>
-        <!-- Pagination end -->
       </main>
     </div>
   </body>
