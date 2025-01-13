@@ -52,7 +52,7 @@ public class AktivitasController {
       @RequestParam(defaultValue = "0") int jam,
       @RequestParam(defaultValue = "0") int menit,
       @RequestParam(defaultValue = "0") int detik,
-      @RequestParam String satuanJarak, //parameter buat ngitung satuan jarak
+      @RequestParam String satuanJarak, // parameter buat ngitung satuan jarak
       @RequestParam("foto") MultipartFile[] foto,
       HttpSession session, Model model) {
     if (result.hasErrors()) {
@@ -80,12 +80,12 @@ public class AktivitasController {
 
     // Validasi jarak tempuh
     if (jarakDiMeter > 42195) {
-      result.rejectValue("jarakTempuh", "error.jarakTempuh","Jarak yang dimasukan terlalu panjang (maks 42.196 meter)");
+      result.rejectValue("jarakTempuh", "error.jarakTempuh",
+          "Jarak yang dimasukan terlalu panjang (maks 42.196 meter)");
       model.addAttribute("userRole", "member");
       return "tambah-aktivitas";
     }
 
-    aktivitas.setJarakTempuh(jarakDiMeter);
     aktivitas.setIdUser((Integer) session.getAttribute("idUser"));
 
     // aktivitas.setUrlFoto(new ArrayList<>());
